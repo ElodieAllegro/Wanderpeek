@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Booki - Trouvez votre hébergement pour des vacances de rêve</title>
+    <title>Wanderpeek - Trouvez votre hébergement pour des vacances de rêve</title>
     <link rel="stylesheet" href="./src/styles/main.css">
   </head>
   <body>
@@ -12,7 +12,11 @@
     <header class="header">
       <nav class="nav container">
         <div class="nav-brand">
-          <a href="/index.html">  <span class="brand-name">Wanderpeek</span></a>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" class="logo-icon">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#0065FC"/>
+            <circle cx="12" cy="9" r="2.5" fill="white"/>
+          </svg>
+          <span class="brand-name">Wanderpeek</span>
         </div>
         <ul class="nav-links">
           <li><a href="#" data-page="home" class="nav-link active">Hébergements</a></li>
@@ -29,67 +33,72 @@
         <div class="container">
           <!-- Hero Section -->
           <section class="hero">
-            <h1 class="hero-title">Trouvez votre hébergement pour des vacances de rêve</h1>
-            <p class="hero-subtitle">En plein centre-ville ou en pleine nature</p>
-            
-            <!-- Search Form -->
-            <form class="search-form" id="search-form">
-              <div class="search-input-group">
-                <div class="search-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/>
-                    <circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="2"/>
-                  </svg>
+            <div class="hero-content">
+              
+              <div class="hero-text">
+                <h1 class="hero-title">Trouvez votre hébergement pour des vacances de rêve</h1>
+                <p class="hero-subtitle">En plein centre-ville ou en pleine nature</p>
+                
+                <!-- Search Form -->
+                <form class="search-form" id="search-form">
+                  <div class="search-input-group">
+                    <div class="search-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="2"/>
+                      </svg>
+                    </div>
+                    <input type="text" class="search-input" id="search-input" placeholder="Marseille, France" value="Marseille, France">
+                    <button type="submit" class="search-btn">
+                      <span>Rechercher</span>
+                      <svg class="search-btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <circle cx="11" cy="11" r="8" stroke="white" stroke-width="2"/>
+                        <path d="21 21L16.5 16.5" stroke="white" stroke-width="2"/>
+                      </svg>
+                    </button>
+                  </div>
+                </form>
+
+                <!-- Filters -->
+                <div class="filters">
+                  <h3 class="filters-title">Filtres</h3>
+                  <div class="filters-list">
+                    <button class="filter-btn" data-filter="economique">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" stroke-width="2"/>
+                      </svg>
+                      Économique
+                    </button>
+                    <button class="filter-btn" data-filter="familial">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2"/>
+                      </svg>
+                      Familial
+                    </button>
+                    <button class="filter-btn" data-filter="romantique">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z" stroke="currentColor" stroke-width="2"/>
+                      </svg>
+                      Romantique
+                    </button>
+                    <button class="filter-btn" data-filter="pepites">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" stroke="currentColor" stroke-width="2"/>
+                      </svg>
+                      Nos pépites
+                    </button>
+                  </div>
                 </div>
-                <input type="text" class="search-input" id="search-input" placeholder="Marseille, France" value="Marseille, France">
-                <button type="submit" class="search-btn">
-                  <span>Rechercher</span>
-                  <svg class="search-btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <circle cx="11" cy="11" r="8" stroke="white" stroke-width="2"/>
-                    <path d="21 21L16.5 16.5" stroke="white" stroke-width="2"/>
-                  </svg>
-                </button>
-              </div>
-            </form>
 
-            <!-- Filters -->
-            <div class="filters">
-              <h3 class="filters-title">Filtres</h3>
-              <div class="filters-list">
-                <button class="filter-btn" data-filter="economique">
+                <!-- Info -->
+                <div class="info">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="12" cy="12" r="10" stroke="#0065FC" stroke-width="2"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="#0065FC" stroke-width="2"/>
                   </svg>
-                  Économique
-                </button>
-                <button class="filter-btn" data-filter="familial">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2"/>
-                  </svg>
-                  Familial
-                </button>
-                <button class="filter-btn" data-filter="romantique">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z" stroke="currentColor" stroke-width="2"/>
-                  </svg>
-                  Romantique
-                </button>
-                <button class="filter-btn" data-filter="pepites">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" stroke="currentColor" stroke-width="2"/>
-                  </svg>
-                  Nos pépites
-                </button>
+                  <span id="info-text">Plus de 500 logements sont disponibles dans cette ville</span>
+                </div>
               </div>
-            </div>
-
-            <!-- Info -->
-            <div class="info">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="#0065FC" stroke-width="2"/>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="#0065FC" stroke-width="2"/>
-              </svg>
-              <span id="info-text">Plus de 500 logements sont disponibles dans cette ville</span>
             </div>
           </section>
 

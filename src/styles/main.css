@@ -7,8 +7,8 @@
 
 :root {
   /* Colors */
-  --primary-color: #fc6100;
-  --primary-light: #DEEBFF;
+  --primary-color: #0065FC;
+  --primary-light: #ffeade;
   --secondary-color: #F2F2F2;
   --text-color: #000000;
   --text-light: #BFBFBF;
@@ -92,11 +92,9 @@ body {
   gap: var(--spacing-sm);
 }
 
-.logo {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--border-radius-md);
-  object-fit: cover;
+.logo-icon {
+  width: 32px;
+  height: 32px;
 }
 
 .brand-name {
@@ -119,6 +117,8 @@ body {
   border-radius: var(--border-radius-md);
   transition: var(--transition-fast);
   position: relative;
+  border: none;
+  background: none;
 }
 
 .nav-link:hover,
@@ -155,25 +155,61 @@ body {
 /* Hero Section */
 .hero {
   padding: var(--spacing-xxl) 0;
-  text-align: center;
+  background-image:url(../../public/france_marseille_calanques.jpg);
+  background-color: var(--secondary-color);
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 10px;
+}
+
+.hero-content {
+align-items: center;
+}
+
+.hero-text {
+ text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  max-width: 800px;
+  margin: 0 auto;
+ 
 }
 
 .hero-title {
-  font-size: var(--font-size-xxl);
+  font-size: 30px;
   font-weight: 700;
   margin-bottom: var(--spacing-sm);
+  line-height: 1.2;
+  color: var(--white);
+  text-align: center;
+   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .hero-subtitle {
-  font-size: var(--font-size-base);
-  color: var(--text-light);
+  font-size: var(--font-size-xl);
+  color: var(--secondary-color);
   margin-bottom: var(--spacing-xl);
+   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.hero-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-vacation-image {
+  width: 100%;
+  max-width: 500px;
+  height: 350px;
+  object-fit: cover;
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-medium);
 }
 
 /* Search Form */
 .search-form {
   max-width: 500px;
-  margin: 0 auto var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
 }
 
 .search-input-group {
@@ -227,14 +263,13 @@ body {
   margin-bottom: var(--spacing-xl);
   text-align: left;
   max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .filters-title {
   font-size: var(--font-size-large);
   font-weight: 600;
   margin-bottom: var(--spacing-md);
+  color: var(--primary-light);
 }
 
 .filters-list {
@@ -264,7 +299,7 @@ body {
 
 .filter-btn.active {
   background-color: var(--primary-color);
-  border-color: var(--primary-color);
+  /* border-color: var(--primary-color); */
   color: var(--white);
 }
 
@@ -280,10 +315,10 @@ body {
 .info {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: var(--spacing-sm);
   font-size: var(--font-size-base);
   margin-bottom: var(--spacing-xl);
+  color: var(--white);
 }
 
 /* Content Wrapper */
@@ -877,6 +912,15 @@ body {
   .account-content {
     grid-template-columns: 1fr;
   }
+  
+  .hero-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  
+  .hero-text {
+    text-align: center;
+  }
 }
 
 @media (max-width: 768px) {
@@ -900,6 +944,10 @@ body {
   
   .hero-title {
     font-size: var(--font-size-xl);
+  }
+  
+  .hero-vacation-image {
+    height: 250px;
   }
   
   .search-input-group {
@@ -955,6 +1003,22 @@ body {
     height: 200px;
   }
 }
+@media (max-width: 600px) {
+  .search-input-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+}
+
 
 @media (max-width: 480px) {
   .hero {
@@ -963,6 +1027,10 @@ body {
   
   .hero-title {
     font-size: var(--font-size-large);
+  }
+  
+  .hero-vacation-image {
+    height: 200px;
   }
   
   .accommodations,
@@ -1011,7 +1079,7 @@ html {
 /* Focus states for accessibility */
 *:focus {
   outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
+  /* outline-offset: 2px; */
 }
 
 button:focus,
