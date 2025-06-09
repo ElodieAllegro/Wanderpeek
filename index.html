@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booki - Trouvez votre hébergement pour des vacances de rêve</title>
+    <link rel="stylesheet" href="./src/styles/main.css">
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <nav class="nav container">
+        <div class="nav-brand">
+          <a href="/index.html">  <span class="brand-name">Wanderpeek</span></a>
+        </div>
+        <ul class="nav-links">
+          <li><a href="#" data-page="home" class="nav-link active">Hébergements</a></li>
+          <li><a href="#" data-page="activities" class="nav-link">Activités</a></li>
+          <li><a href="#" data-page="login" class="nav-link" id="auth-link">Se connecter</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Home Page -->
+      <section id="home-page" class="page active">
+        <div class="container">
+          <!-- Hero Section -->
+          <section class="hero">
+            <h1 class="hero-title">Trouvez votre hébergement pour des vacances de rêve</h1>
+            <p class="hero-subtitle">En plein centre-ville ou en pleine nature</p>
+            
+            <!-- Search Form -->
+            <form class="search-form" id="search-form">
+              <div class="search-input-group">
+                <div class="search-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </div>
+                <input type="text" class="search-input" id="search-input" placeholder="Marseille, France" value="Marseille, France">
+                <button type="submit" class="search-btn">
+                  <span>Rechercher</span>
+                  <svg class="search-btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <circle cx="11" cy="11" r="8" stroke="white" stroke-width="2"/>
+                    <path d="21 21L16.5 16.5" stroke="white" stroke-width="2"/>
+                  </svg>
+                </button>
+              </div>
+            </form>
+
+            <!-- Filters -->
+            <div class="filters">
+              <h3 class="filters-title">Filtres</h3>
+              <div class="filters-list">
+                <button class="filter-btn" data-filter="economique">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  Économique
+                </button>
+                <button class="filter-btn" data-filter="familial">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  Familial
+                </button>
+                <button class="filter-btn" data-filter="romantique">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  Romantique
+                </button>
+                <button class="filter-btn" data-filter="pepites">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  Nos pépites
+                </button>
+              </div>
+            </div>
+
+            <!-- Info -->
+            <div class="info">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="#0065FC" stroke-width="2"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="#0065FC" stroke-width="2"/>
+              </svg>
+              <span id="info-text">Plus de 500 logements sont disponibles dans cette ville</span>
+            </div>
+          </section>
+
+          <!-- Content Section -->
+          <div class="content-wrapper">
+            <!-- Accommodations -->
+            <section class="accommodations">
+              <h2>Hébergements à <span id="city-name">Marseille</span></h2>
+              <div class="accommodations-grid" id="accommodations-grid">
+                <!-- Cards will be generated by JavaScript -->
+              </div>
+              <button class="show-more-btn" id="show-more-btn">Afficher plus</button>
+            </section>
+
+            <!-- Popular -->
+            <aside class="popular">
+              <div class="popular-header">
+                <h2>Les plus populaires</h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" fill="#0065FC"/>
+                </svg>
+              </div>
+              <div class="popular-list" id="popular-list">
+                <!-- Popular cards will be generated by JavaScript -->
+              </div>
+            </aside>
+          </div>
+
+          <!-- Activities -->
+          <section class="activities">
+            <h2>Activités à <span id="activities-city-name">Marseille</span></h2>
+            <div class="activities-grid" id="activities-grid">
+              <!-- Activity cards will be generated by JavaScript -->
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- Login Page -->
+      <section id="login-page" class="page">
+        <div class="container">
+          <div class="auth-container">
+            <div class="auth-card">
+              <h2 id="auth-title">Se connecter</h2>
+              <form id="auth-form" class="auth-form">
+                <div class="form-group" id="name-group" style="display: none;">
+                  <label for="name">Nom complet</label>
+                  <input type="text" id="name" name="name">
+                </div>
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                  <label for="password">Mot de passe</label>
+                  <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="auth-submit-btn" id="auth-submit-btn">Se connecter</button>
+              </form>
+              <p class="auth-switch">
+                <span id="auth-switch-text">Pas encore de compte ?</span>
+                <button type="button" id="auth-switch-btn" class="auth-switch-link">S'inscrire</button>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Account Page -->
+      <section id="account-page" class="page">
+        <div class="container">
+          <div class="account-container">
+            <div class="account-header">
+              <h2>Mon compte</h2>
+              <button id="logout-btn" class="logout-btn">Se déconnecter</button>
+            </div>
+            <div class="account-content">
+              <div class="user-info">
+                <h3>Informations personnelles</h3>
+                <p><strong>Nom :</strong> <span id="user-name"></span></p>
+                <p><strong>Email :</strong> <span id="user-email"></span></p>
+              </div>
+              <div class="reservations">
+                <h3>Mes réservations</h3>
+                <div id="reservations-list" class="reservations-list">
+                  <!-- Reservations will be displayed here -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Activities Page -->
+      <section id="activities-page" class="page">
+        <div class="container">
+          <h2>Activités à <span id="activities-page-city">Marseille</span></h2>
+          <div class="activities-grid" id="activities-page-grid">
+            <!-- Activity cards will be generated by JavaScript -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>À propos</h3>
+            <ul>
+              <li><a href="#">Fonctionnement du site</a></li>
+              <li><a href="#">Conditions générales</a></li>
+              <li><a href="#">Données et confidentialité</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3>Nos hébergements</h3>
+            <ul>
+              <li><a href="#">Charte qualité</a></li>
+              <li><a href="#">Proposer votre hôtel</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3>Assistance</h3>
+            <ul>
+              <li><a href="#">Centre d'aide</a></li>
+              <li><a href="#">Nous contacter</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Modal for accommodation details -->
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <div id="modal-body">
+          <!-- Modal content will be inserted here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="./src/js/main.js"></script>
+  </body>
+</html>
