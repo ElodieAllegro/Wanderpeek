@@ -1,7 +1,7 @@
 // API service for communicating with Symfony backend
 class ApiService {
   constructor() {
-    this.baseURL = 'https://localhost:8000/api'; // Changed from http to https
+    this.baseURL = 'http://localhost:8000/api'; // Changed from https to http
     this.token = localStorage.getItem('auth_token');
     this.useMockData = false; // Flag to determine if we should use mock data
   }
