@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/listings')]
+#[Route('/api/listings')]
 class ListingController extends AbstractController
 {
     #[Route('/', name: 'app_listing_index')]
