@@ -1,7 +1,7 @@
 // API service for communicating with Symfony backend
 class ApiService {
   constructor() {
-    this.baseURL = 'http://localhost:8000/api'; // Adjust based on your Symfony setup
+    this.baseURL = 'https://localhost:8000/api'; // Changed from http to https
     this.token = localStorage.getItem('auth_token');
   }
 
