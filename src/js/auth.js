@@ -1,27 +1,8 @@
-// Authentication management
-import api from './api.js';
-
+// Authentication management with localStorage
 export class AuthManager {
   constructor() {
-    this.currentUser = null;
+    this.currentUser = this.getCurrentUser();
     this.onAuthChange = null;
-    this.init();
-  }
-
-  async init() {
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      try {
-        const user = await api.getProfile();
-        this.currentUser = user;
-        if (this.onAuthChange) {
-          this.onAuthChange(this.currentUser);
-        }
-      } catch (error) {
-        console.error('Failed to load user profile:', error);
-        this.logout();
-      }
-    }
   }
 
   // Check if user is logged in
@@ -29,88 +10,138 @@ export class AuthManager {
     return this.currentUser !== null;
   }
 
-  // Check if user is admin
-  isAdmin() {
-    return this.currentUser && this.currentUser.roles.includes('ROLE_ADMIN');
-  }
-
-  // Get current user
+  // Get current user from localStorage
   getCurrentUser() {
-    return this.currentUser;
+    const userData = localStorage.getItem('bookiUser');
+    return userData ? JSON.parse(userData) : null;
   }
 
   // Login user
-  async login(email, password) {
-    try {
-      const response = await api.login(email, password);
-      
-      if (response.token) {
-        api.setToken(response.token);
-        this.currentUser = response.user;
-        
-        if (this.onAuthChange) {
-          this.onAuthChange(this.currentUser);
-        }
-        
-        return { success: true, user: this.currentUser };
-      }
-      
-      return { success: false, message: 'Réponse invalide du serveur' };
-    } catch (error) {
-      return { success: false, message: error.message };
-    }
-  }
-
-  // Register new user
-  async register(userData) {
-    try {
-      const response = await api.register(userData);
-      
-      if (response.token) {
-        api.setToken(response.token);
-        this.currentUser = response.user;
-        
-        if (this.onAuthChange) {
-          this.onAuthChange(this.currentUser);
-        }
-        
-        return { success: true, user: this.currentUser };
-      }
-      
-      return { success: false, message: 'Réponse invalide du serveur' };
-    } catch (error) {
-      return { success: false, message: error.message };
-    }
-  }
-
-  // Logout user
-  logout() {
-    this.currentUser = null;
-    api.removeToken();
+  login(email, password) {
+    const users = this.getUsers();
+    const user = users.find(u => u.email === email && u.password === password);
     
-    if (this.onAuthChange) {
-      this.onAuthChange(null);
-    }
-  }
-
-  // Set auth change callback
-  onAuthStateChange(callback) {
-    this.onAuthChange = callback;
-  }
-
-  // Update user profile
-  async updateProfile(profileData) {
-    try {
-      const updatedUser = await api.updateProfile(profileData);
-      this.currentUser = updatedUser;
+    if (user) {
+      this.currentUser = { ...user };
+      delete this.currentUser.password; // Don't store password in current session
+      localStorage.setItem('bookiUser', JSON.stringify(this.currentUser));
       
       if (this.onAuthChange) {
         this.onAuthChange(this.currentUser);
       }
       
       return { success: true, user: this.currentUser };
-    } catch (error) {
-      return { success: false, message: error.message };
     }
+    
+    return { success: false, message: 'Email ou mot de passe incorrect' };
+  }
+
+  // Register new user
+  register(name, email, password) {
+    const users = this.getUsers();
+    
+    // Check if user already exists
+    if (users.find(u => u.email === email)) {
+      return { success: false, message: 'Un compte existe déjà avec cet email' };
+    }
+
+    // Create new user
+    const newUser = {
+      id: Date.now(),
+      name,
+      email,
+      password,
+      createdAt: new Date().toISOString(),
+      reservations: []
+    };
+
+    users.push(newUser);
+    localStorage.setItem('bookiUsers', JSON.stringify(users));
+
+    // Auto login after registration
+    return this.login(email, password);
+  }
+
+  // Logout user
+  logout() {
+    this.currentUser = null;
+    localStorage.removeItem('bookiUser');
+    
+    if (this.onAuthChange) {
+      this.onAuthChange(null);
+    }
+  }
+
+  // Get all users from localStorage
+  getUsers() {
+    const users = localStorage.getItem('bookiUsers');
+    return users ? JSON.parse(users) : [];
+  }
+
+  // Update user data
+  updateUser(userData) {
+    const users = this.getUsers();
+    const userIndex = users.findIndex(u => u.id === this.currentUser.id);
+    
+    if (userIndex !== -1) {
+      users[userIndex] = { ...users[userIndex], ...userData };
+      localStorage.setItem('bookiUsers', JSON.stringify(users));
+      
+      // Update current user session
+      this.currentUser = { ...this.currentUser, ...userData };
+      localStorage.setItem('bookiUser', JSON.stringify(this.currentUser));
+      
+      if (this.onAuthChange) {
+        this.onAuthChange(this.currentUser);
+      }
+    }
+  }
+
+  // Add reservation to user
+  addReservation(reservationData) {
+    if (!this.isLoggedIn()) {
+      return { success: false, message: 'Vous devez être connecté pour réserver' };
+    }
+
+    const reservation = {
+      id: Date.now(),
+      ...reservationData,
+      createdAt: new Date().toISOString(),
+      status: 'pending'
+    };
+
+    const users = this.getUsers();
+    const userIndex = users.findIndex(u => u.id === this.currentUser.id);
+    
+    if (userIndex !== -1) {
+      if (!users[userIndex].reservations) {
+        users[userIndex].reservations = [];
+      }
+      
+      users[userIndex].reservations.push(reservation);
+      localStorage.setItem('bookiUsers', JSON.stringify(users));
+      
+      // Update current user session
+      this.currentUser.reservations = users[userIndex].reservations;
+      localStorage.setItem('bookiUser', JSON.stringify(this.currentUser));
+      
+      return { success: true, reservation };
+    }
+    
+    return { success: false, message: 'Erreur lors de la sauvegarde' };
+  }
+
+  // Get user reservations
+  getUserReservations() {
+    if (!this.isLoggedIn()) {
+      return [];
+    }
+    
+    return this.currentUser.reservations || [];
+  }
+
+  // Set auth change callback
+  onAuthStateChange(callback) {
+    this.onAuthChange = callback;
   }
 }

@@ -1,21 +1,28 @@
 // Main application logic
 import { AuthManager } from './auth.js';
 import { UIManager } from './ui.js';
-import api from './api.js';
+import { 
+  accommodations, 
+  popularAccommodations, 
+  activities, 
+  cities,
+  getRandomAccommodations 
+} from './data.js';
 
-class WanderpeekApp {
+class BookiApp {
   constructor() {
     this.authManager = new AuthManager();
     this.uiManager = new UIManager();
-    this.currentFilters = {};
+    this.currentCity = 'Marseille';
+    this.activeFilters = new Set();
     this.isAuthMode = 'login'; // 'login' or 'register'
     
     this.init();
   }
 
-  async init() {
+  init() {
     this.setupEventListeners();
-    await this.loadInitialData();
+    this.loadInitialData();
     this.setupAuth();
   }
 
@@ -25,7 +32,7 @@ class WanderpeekApp {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const page = link.dataset.page;
-        this.handleNavigation(page);
+        this.uiManager.showPage(page);
       });
     });
 
@@ -38,13 +45,28 @@ class WanderpeekApp {
     // Filters
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        this.toggleFilter(btn);
+        this.toggleFilter(btn.dataset.filter);
       });
     });
 
-    // Listings filters
-    document.getElementById('apply-filters')?.addEventListener('click', () => {
-      this.applyListingsFilters();
+    // Card clicks
+    document.addEventListener('click', (e) => {
+      const card = e.target.closest('[data-id]');
+      if (card) {
+        this.handleCardClick(card);
+      }
+    });
+
+    // Modal close
+    document.querySelector('.modal-close').addEventListener('click', () => {
+      this.uiManager.closeModal();
+    });
+
+    // Click outside modal to close
+    document.getElementById('modal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        this.uiManager.closeModal();
+      }
     });
 
     // Auth form
@@ -58,247 +80,226 @@ class WanderpeekApp {
       this.toggleAuthMode();
     });
 
-    // Create listing button
-    document.getElementById('create-listing-btn')?.addEventListener('click', () => {
-      this.uiManager.showListingModal();
-    });
-
-    // Listing form
-    document.getElementById('listing-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      this.handleListingSubmit(e);
-    });
-
-    // Modal close buttons
-    document.querySelectorAll('.modal-close').forEach(btn => {
-      btn.addEventListener('click', () => {
-        this.closeModals();
-      });
-    });
-
-    // Cancel listing button
-    document.getElementById('cancel-listing')?.addEventListener('click', () => {
-      this.uiManager.closeListingModal();
-    });
-
-    // Click outside modal to close
+    // Logout
     document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('modal')) {
-        this.closeModals();
+      if (e.target.id === 'logout-btn') {
+        this.authManager.logout();
+        this.uiManager.showPage('home');
       }
     });
 
-    // Dynamic event delegation for listing cards and actions
-    document.addEventListener('click', (e) => {
-      this.handleDynamicClicks(e);
+    // Booking form submission
+    document.addEventListener('submit', (e) => {
+      if (e.target.id === 'booking-form') {
+        e.preventDefault();
+        this.handleBooking(e);
+      }
     });
 
-    // ESC key to close modals
+    // Show more button
+    document.getElementById('show-more-btn').addEventListener('click', () => {
+      this.showMoreAccommodations();
+    });
+
+    // ESC key to close modal
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        this.closeModals();
+        this.uiManager.closeModal();
       }
     });
   }
 
-  async loadInitialData() {
-    try {
-      // Load featured listings for home page
-      const listings = await api.getListings({ limit: 6 });
-      this.uiManager.renderListings(listings, 'featured-listings-grid');
-    } catch (error) {
-      console.error('Failed to load initial data:', error);
-      this.uiManager.showNotification('Erreur lors du chargement des données', 'error');
-    }
+  loadInitialData() {
+    this.displayAccommodations();
+    this.displayPopularAccommodations();
+    this.displayActivities();
+    this.updateCityDisplay();
   }
 
   setupAuth() {
+    // Check if user is already logged in
+    if (this.authManager.isLoggedIn()) {
+      this.uiManager.updateAuthUI(this.authManager.currentUser);
+    }
+
     // Listen for auth state changes
     this.authManager.onAuthStateChange((user) => {
       this.uiManager.updateAuthUI(user);
       if (user) {
-        this.loadUserData();
+        this.updateAccountPage();
       }
     });
   }
 
-  async handleNavigation(page) {
-    this.uiManager.showPage(page);
-
-    // Load page-specific data
-    switch (page) {
-      case 'listings':
-        await this.loadListings();
-        break;
-      case 'dashboard':
-        if (this.authManager.isLoggedIn()) {
-          await this.loadDashboardData();
-        } else {
-          this.uiManager.showPage('login');
-        }
-        break;
-      case 'admin':
-        if (this.authManager.isAdmin()) {
-          await this.loadAdminData();
-        } else {
-          this.uiManager.showPage('home');
-          this.uiManager.showNotification('Accès non autorisé', 'error');
-        }
-        break;
-    }
-  }
-
-  async handleSearch() {
+  handleSearch() {
     const searchInput = document.getElementById('search-input');
     const searchTerm = searchInput.value.trim();
     
-    if (searchTerm) {
-      this.currentFilters.city = searchTerm;
+    if (!searchTerm) return;
+
+    // Extract city name (remove ", France" if present)
+    const city = searchTerm.split(',')[0].trim();
+    
+    // Check if city exists in our data
+    const cityExists = cities.some(c => c.toLowerCase() === city.toLowerCase());
+    
+    if (cityExists) {
+      this.currentCity = city;
+      this.displayAccommodations();
+      this.displayActivities();
+      this.updateCityDisplay();
     } else {
-      delete this.currentFilters.city;
+      // For demo purposes, generate random data for unknown cities
+      this.currentCity = city;
+      this.displayAccommodations();
+      this.displayActivities();
+      this.updateCityDisplay();
     }
 
-    this.uiManager.showPage('listings');
-    await this.loadListings();
+    // Reset filters
+    this.activeFilters.clear();
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
   }
 
-  toggleFilter(filterBtn) {
-    const filter = filterBtn.dataset.filter;
+  toggleFilter(filterType) {
+    const filterBtn = document.querySelector(`[data-filter="${filterType}"]`);
     
-    if (filterBtn.classList.contains('active')) {
+    if (this.activeFilters.has(filterType)) {
+      this.activeFilters.delete(filterType);
       filterBtn.classList.remove('active');
-      delete this.currentFilters.category;
     } else {
-      // Remove active class from all filter buttons
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
+      this.activeFilters.add(filterType);
+      filterBtn.classList.add('active');
+    }
+
+    this.displayAccommodations();
+  }
+
+  displayAccommodations() {
+    let cityAccommodations = accommodations[this.currentCity];
+    
+    // If city doesn't exist in our data, generate random accommodations
+    if (!cityAccommodations) {
+      cityAccommodations = getRandomAccommodations(this.currentCity);
+    }
+
+    // Apply filters
+    let filteredAccommodations = cityAccommodations;
+    if (this.activeFilters.size > 0) {
+      filteredAccommodations = cityAccommodations.filter(acc => 
+        this.activeFilters.has(acc.category)
+      );
+    }
+
+    this.uiManager.renderAccommodationCards(filteredAccommodations, 'accommodations-grid');
+    
+    // Update info text
+    const count = filteredAccommodations.length;
+    const infoText = `Plus de ${count} logements sont disponibles dans cette ville`;
+    this.uiManager.updateInfoText(infoText);
+  }
+
+  displayPopularAccommodations() {
+    this.uiManager.renderPopularCards(popularAccommodations, 'popular-list');
+  }
+
+  displayActivities() {
+    let cityActivities = activities[this.currentCity];
+    
+    // If city doesn't exist, show default message
+    if (!cityActivities) {
+      cityActivities = [
+        {
+          id: Date.now(),
+          title: `Centre-ville de ${this.currentCity}`,
+          image: 'https://images.pexels.com/photos/1010657/pexels-photo-1010657.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+          description: `Découvrez le charme du centre historique de ${this.currentCity}.`
+        },
+        {
+          id: Date.now() + 1,
+          title: `Musée de ${this.currentCity}`,
+          image: 'https://images.pexels.com/photos/2225617/pexels-photo-2225617.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+          description: `Explorez l'histoire et la culture locale de ${this.currentCity}.`
+        }
+      ];
+    }
+
+    this.uiManager.renderActivityCards(cityActivities, 'activities-grid');
+    this.uiManager.renderActivityCards(cityActivities, 'activities-page-grid');
+  }
+
+  updateCityDisplay() {
+    this.uiManager.updateCityName(this.currentCity);
+  }
+
+  handleCardClick(card) {
+    const id = parseInt(card.dataset.id);
+    const type = card.dataset.type;
+
+    if (type === 'accommodation') {
+      // Find accommodation in all sources
+      let accommodation = null;
+      
+      // Check regular accommodations
+      Object.values(accommodations).forEach(cityAccs => {
+        const found = cityAccs.find(acc => acc.id === id);
+        if (found) accommodation = found;
       });
       
-      filterBtn.classList.add('active');
-      this.currentFilters.category = filter;
-    }
-
-    // If we're on the listings page, reload listings
-    if (this.uiManager.currentPage === 'listings') {
-      this.loadListings();
-    }
-  }
-
-  async applyListingsFilters() {
-    const minPrice = document.getElementById('min-price').value;
-    const maxPrice = document.getElementById('max-price').value;
-    const guests = document.getElementById('guests-filter').value;
-
-    if (minPrice) this.currentFilters.minPrice = minPrice;
-    else delete this.currentFilters.minPrice;
-
-    if (maxPrice) this.currentFilters.maxPrice = maxPrice;
-    else delete this.currentFilters.maxPrice;
-
-    if (guests) this.currentFilters.minGuests = guests;
-    else delete this.currentFilters.minGuests;
-
-    await this.loadListings();
-  }
-
-  async loadListings() {
-    try {
-      this.uiManager.showLoading(document.getElementById('listings-grid'));
-      const listings = await api.getListings(this.currentFilters);
-      this.uiManager.renderListings(listings, 'listings-grid');
-    } catch (error) {
-      console.error('Failed to load listings:', error);
-      this.uiManager.showNotification('Erreur lors du chargement des annonces', 'error');
-    } finally {
-      this.uiManager.hideLoading(document.getElementById('listings-grid'));
-    }
-  }
-
-  async loadUserData() {
-    if (!this.authManager.isLoggedIn()) return;
-
-    try {
-      // Load user-specific data when needed
-      if (this.uiManager.currentPage === 'dashboard') {
-        await this.loadDashboardData();
+      // Check popular accommodations
+      if (!accommodation) {
+        accommodation = popularAccommodations.find(acc => acc.id === id);
       }
-    } catch (error) {
-      console.error('Failed to load user data:', error);
+      
+      // Check generated accommodations
+      if (!accommodation) {
+        const generated = getRandomAccommodations(this.currentCity);
+        accommodation = generated.find(acc => acc.id === id);
+      }
+
+      if (accommodation) {
+        this.uiManager.showAccommodationModal(accommodation);
+      }
+    } else if (type === 'activity') {
+      // Find activity
+      let activity = null;
+      Object.values(activities).forEach(cityActs => {
+        const found = cityActs.find(act => act.id === id);
+        if (found) activity = found;
+      });
+
+      if (activity) {
+        this.uiManager.showActivityModal(activity);
+      }
     }
   }
 
-  async loadDashboardData() {
-    try {
-      const [userListings, reservations] = await Promise.all([
-        api.getUserListings(),
-        api.getReservations(),
-      ]);
-
-      this.uiManager.renderUserListings(userListings, 'user-listings');
-      this.uiManager.renderReservations(reservations.slice(0, 5), 'recent-reservations');
-
-      // Update stats
-      const stats = {
-        userListings: userListings.length,
-        receivedReservations: reservations.filter(r => r.type === 'received').length,
-        myReservations: reservations.filter(r => r.type === 'made').length,
-        unreadMessages: 0, // TODO: Implement messages
-      };
-
-      this.uiManager.updateDashboardStats(stats);
-    } catch (error) {
-      console.error('Failed to load dashboard data:', error);
-      this.uiManager.showNotification('Erreur lors du chargement du tableau de bord', 'error');
-    }
-  }
-
-  async loadAdminData() {
-    try {
-      const [pendingListings, stats] = await Promise.all([
-        api.getPendingListings(),
-        api.getStats(),
-      ]);
-
-      this.uiManager.renderAdminListings(pendingListings, 'pending-listings');
-      this.uiManager.updateAdminStats(stats);
-    } catch (error) {
-      console.error('Failed to load admin data:', error);
-      this.uiManager.showNotification('Erreur lors du chargement des données admin', 'error');
-    }
-  }
-
-  async handleAuth(e) {
+  handleAuth(e) {
     const formData = new FormData(e.target);
     const email = formData.get('email');
     const password = formData.get('password');
 
-    try {
-      let result;
-      
-      if (this.isAuthMode === 'login') {
-        result = await this.authManager.login(email, password);
-      } else {
-        const firstName = formData.get('firstName');
-        const lastName = formData.get('lastName');
-        
-        result = await this.authManager.register({
-          firstName,
-          lastName,
-          email,
-          password,
-        });
-      }
-
+    if (this.isAuthMode === 'login') {
+      const result = this.authManager.login(email, password);
       if (result.success) {
-        this.uiManager.showNotification(
-          this.isAuthMode === 'login' ? 'Connexion réussie !' : 'Inscription réussie !'
-        );
-        this.uiManager.showPage('dashboard');
+        this.uiManager.showNotification('Connexion réussie !');
+        this.uiManager.showPage('account');
+        this.updateAccountPage();
       } else {
         this.uiManager.showNotification(result.message, 'error');
       }
-    } catch (error) {
-      this.uiManager.showNotification('Erreur de connexion', 'error');
+    } else {
+      const name = formData.get('name');
+      const result = this.authManager.register(name, email, password);
+      if (result.success) {
+        this.uiManager.showNotification('Inscription réussie !');
+        this.uiManager.showPage('account');
+        this.updateAccountPage();
+      } else {
+        this.uiManager.showNotification(result.message, 'error');
+      }
     }
   }
 
@@ -310,7 +311,6 @@ class WanderpeekApp {
     const switchText = document.getElementById('auth-switch-text');
     const switchBtn = document.getElementById('auth-switch-btn');
     const nameGroup = document.getElementById('name-group');
-    const lastnameGroup = document.getElementById('lastname-group');
 
     if (this.isAuthMode === 'register') {
       title.textContent = 'S\'inscrire';
@@ -318,178 +318,92 @@ class WanderpeekApp {
       switchText.textContent = 'Déjà un compte ?';
       switchBtn.textContent = 'Se connecter';
       nameGroup.style.display = 'block';
-      lastnameGroup.style.display = 'block';
       nameGroup.querySelector('input').required = true;
-      lastnameGroup.querySelector('input').required = true;
     } else {
       title.textContent = 'Se connecter';
       submitBtn.textContent = 'Se connecter';
       switchText.textContent = 'Pas encore de compte ?';
       switchBtn.textContent = 'S\'inscrire';
       nameGroup.style.display = 'none';
-      lastnameGroup.style.display = 'none';
       nameGroup.querySelector('input').required = false;
-      lastnameGroup.querySelector('input').required = false;
     }
 
     // Clear form
     document.getElementById('auth-form').reset();
   }
 
-  async handleListingSubmit(e) {
-    const formData = new FormData(e.target);
-    const listingId = e.target.dataset.listingId;
+  updateAccountPage() {
+    const user = this.authManager.currentUser;
+    if (!user) return;
 
-    // Collect amenities
-    const amenities = [];
-    formData.getAll('amenities').forEach(amenity => {
-      amenities.push(amenity);
-    });
+    document.getElementById('user-name').textContent = user.name || 'Non spécifié';
+    document.getElementById('user-email').textContent = user.email;
 
-    const listingData = {
-      title: formData.get('title'),
-      category: formData.get('category'),
-      description: formData.get('description'),
-      pricePerNight: parseFloat(formData.get('pricePerNight')),
-      maxGuests: parseInt(formData.get('maxGuests')),
-      bedrooms: parseInt(formData.get('bedrooms')),
-      bathrooms: parseInt(formData.get('bathrooms')),
-      address: formData.get('address'),
-      city: formData.get('city'),
-      postalCode: formData.get('postalCode'),
-      country: formData.get('country'),
-      amenities: amenities,
-    };
-
-    try {
-      if (listingId) {
-        await api.updateListing(listingId, listingData);
-        this.uiManager.showNotification('Annonce mise à jour avec succès !');
-      } else {
-        await api.createListing(listingData);
-        this.uiManager.showNotification('Annonce créée avec succès !');
-      }
-
-      this.uiManager.closeListingModal();
-      
-      // Reload dashboard data if we're on the dashboard
-      if (this.uiManager.currentPage === 'dashboard') {
-        await this.loadDashboardData();
-      }
-    } catch (error) {
-      console.error('Failed to save listing:', error);
-      this.uiManager.showNotification('Erreur lors de la sauvegarde', 'error');
-    }
+    const reservations = this.authManager.getUserReservations();
+    this.uiManager.renderReservations(reservations);
   }
 
-  handleDynamicClicks(e) {
-    const target = e.target;
-
-    // Listing card clicks
-    if (target.closest('.listing-card') && !target.closest('.listing-actions')) {
-      const card = target.closest('.listing-card');
-      const listingId = card.dataset.id;
-      this.showListingDetails(listingId);
-    }
-
-    // Edit listing
-    if (target.classList.contains('edit-listing')) {
-      const listingId = target.dataset.id;
-      this.editListing(listingId);
-    }
-
-    // Delete listing
-    if (target.classList.contains('delete-listing')) {
-      const listingId = target.dataset.id;
-      this.deleteListing(listingId);
-    }
-
-    // Approve listing (admin)
-    if (target.classList.contains('approve-listing')) {
-      const listingId = target.dataset.id;
-      this.approveListing(listingId);
-    }
-
-    // Reject listing (admin)
-    if (target.classList.contains('reject-listing')) {
-      const listingId = target.dataset.id;
-      this.rejectListing(listingId);
-    }
-
-    // Logout
-    if (target.id === 'logout-btn' || target.textContent === 'Déconnexion') {
-      this.authManager.logout();
-      this.uiManager.showPage('home');
-      this.uiManager.showNotification('Déconnexion réussie');
-    }
-  }
-
-  async showListingDetails(listingId) {
-    try {
-      const listing = await api.getListing(listingId);
-      // TODO: Implement listing details modal
-      console.log('Show listing details:', listing);
-    } catch (error) {
-      console.error('Failed to load listing details:', error);
-      this.uiManager.showNotification('Erreur lors du chargement des détails', 'error');
-    }
-  }
-
-  async editListing(listingId) {
-    try {
-      const listing = await api.getListing(listingId);
-      this.uiManager.showListingModal(listing);
-    } catch (error) {
-      console.error('Failed to load listing for editing:', error);
-      this.uiManager.showNotification('Erreur lors du chargement de l\'annonce', 'error');
-    }
-  }
-
-  async deleteListing(listingId) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?')) {
+  handleBooking(e) {
+    if (!this.authManager.isLoggedIn()) {
+      this.uiManager.showNotification('Vous devez être connecté pour réserver', 'error');
+      this.uiManager.closeModal();
+      this.uiManager.showPage('login');
       return;
     }
 
-    try {
-      await api.deleteListing(listingId);
-      this.uiManager.showNotification('Annonce supprimée avec succès');
-      await this.loadDashboardData();
-    } catch (error) {
-      console.error('Failed to delete listing:', error);
-      this.uiManager.showNotification('Erreur lors de la suppression', 'error');
+    const formData = new FormData(e.target);
+    const checkin = formData.get('checkin');
+    const checkout = formData.get('checkout');
+    const guests = parseInt(formData.get('guests'));
+    const rooms = parseInt(formData.get('rooms'));
+    const message = formData.get('message');
+
+    // Calculate number of nights
+    const checkinDate = new Date(checkin);
+    const checkoutDate = new Date(checkout);
+    const nights = Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24));
+
+    if (nights <= 0) {
+      this.uiManager.showNotification('La date de départ doit être après la date d\'arrivée', 'error');
+      return;
+    }
+
+    // Get accommodation title from modal
+    const accommodationTitle = document.querySelector('.modal-title').textContent;
+    const pricePerNight = parseInt(document.querySelector('.modal-price').textContent.match(/\d+/)[0]);
+    const totalPrice = pricePerNight * nights;
+
+    const reservationData = {
+      accommodationTitle,
+      checkin,
+      checkout,
+      guests,
+      rooms,
+      nights,
+      pricePerNight,
+      totalPrice,
+      message: message || null
+    };
+
+    const result = this.authManager.addReservation(reservationData);
+    
+    if (result.success) {
+      this.uiManager.showNotification(`Demande de réservation envoyée ! Total: ${totalPrice}€`);
+      this.uiManager.closeModal();
+      this.updateAccountPage();
+    } else {
+      this.uiManager.showNotification(result.message, 'error');
     }
   }
 
-  async approveListing(listingId) {
-    try {
-      await api.approveListing(listingId);
-      this.uiManager.showNotification('Annonce approuvée');
-      await this.loadAdminData();
-    } catch (error) {
-      console.error('Failed to approve listing:', error);
-      this.uiManager.showNotification('Erreur lors de l\'approbation', 'error');
-    }
-  }
-
-  async rejectListing(listingId) {
-    try {
-      await api.rejectListing(listingId);
-      this.uiManager.showNotification('Annonce rejetée');
-      await this.loadAdminData();
-    } catch (error) {
-      console.error('Failed to reject listing:', error);
-      this.uiManager.showNotification('Erreur lors du rejet', 'error');
-    }
-  }
-
-  closeModals() {
-    this.uiManager.modal.classList.remove('active');
-    this.uiManager.closeListingModal();
-    document.body.style.overflow = '';
+  showMoreAccommodations() {
+    // For demo purposes, this could load more accommodations
+    // For now, we'll just show a message
+    this.uiManager.showNotification('Aucun hébergement supplémentaire disponible');
   }
 }
 
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  new WanderpeekApp();
+  new BookiApp();
 });

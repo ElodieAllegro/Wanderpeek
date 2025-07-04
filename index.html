@@ -4,9 +4,8 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wanderpeek - Plateforme de location de logements</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="/src/styles/main.css" />
+    <title>Wanderpeek - Trouvez votre hébergement pour des vacances de rêve</title>
+    <link rel="stylesheet" href="/src/styles/main.css">
   </head>
   <body>
     <!-- Header -->
@@ -21,10 +20,8 @@
         </div>
 
         <ul class="nav-links">
-          <li><a href="#" data-page="home" class="nav-link active">Accueil</a></li>
-          <li><a href="#" data-page="listings" class="nav-link">Annonces</a></li>
-          <li><a href="#" data-page="dashboard" class="nav-link dashboard-link" style="display: none;">Tableau de bord</a></li>
-          <li><a href="#" data-page="admin" class="nav-link admin-link" style="display: none;">Administration</a></li>
+          <li><a href="#" data-page="home" class="nav-link active">Hébergements</a></li>
+          <li><a href="#" data-page="activities" class="nav-link">Activités</a></li>
           <li><a href="#" data-page="login" class="nav-link" id="auth-link">Se connecter</a></li>
         </ul>
       </nav>
@@ -39,8 +36,8 @@
           <section class="hero">
             <div class="hero-content">
               <div class="hero-text">
-                <h1 class="hero-title">Trouvez votre logement idéal</h1>
-                <p class="hero-subtitle">Découvrez des hébergements uniques partout en France</p>
+                <h1 class="hero-title">Trouvez votre hébergement pour des vacances de rêve</h1>
+                <p class="hero-subtitle">En plein centre-ville ou en pleine nature</p>
                 
                 <!-- Search Form -->
                 <form class="search-form" id="search-form">
@@ -51,7 +48,7 @@
                         <circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="2"/>
                       </svg>
                     </div>
-                    <input type="text" class="search-input" id="search-input" placeholder="Ville, région...">
+                    <input type="text" class="search-input" id="search-input" placeholder="Marseille, France" value="Marseille, France">
                     <button type="submit" class="search-btn">
                       <span class="search-btn-text">Rechercher</span>
                       <svg class="search-btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -66,90 +63,77 @@
                 <div class="filters">
                   <h3 class="filters-title">Filtres</h3>
                   <div class="filters-list">
-                    <button class="filter-btn" data-filter="apartment">
+                    <button class="filter-btn" data-filter="economique">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M3 21h18M5 21V7l8-4v18M19 21V10l-6-3" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" stroke-width="2"/>
                       </svg>
-                      Appartement
+                      Économique
                     </button>
-                    <button class="filter-btn" data-filter="house">
+                    <button class="filter-btn" data-filter="familial">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M3 21h18M12 2l9 7v12H3V9l9-7z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2"/>
                       </svg>
-                      Maison
+                      Familial
                     </button>
-                    <button class="filter-btn" data-filter="villa">
+                    <button class="filter-btn" data-filter="romantique">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z" stroke="currentColor" stroke-width="2"/>
                       </svg>
-                      Villa
+                      Romantique
                     </button>
-                    <button class="filter-btn" data-filter="studio">
+                    <button class="filter-btn" data-filter="pepites">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" stroke="currentColor" stroke-width="2"/>
                       </svg>
-                      Studio
+                      Nos pépites
                     </button>
                   </div>
                 </div>
-              </div>
-            </div>
-          </section>
 
-          <!-- Featured Listings -->
-          <section class="featured-listings">
-            <h2>Hébergements populaires</h2>
-            <div class="listings-grid" id="featured-listings-grid">
-              <!-- Cards will be generated by JavaScript -->
-            </div>
-          </section>
-        </div>
-      </section>
-
-      <!-- Listings Page -->
-      <section id="listings-page" class="page">
-        <div class="container">
-          <div class="listings-header">
-            <h2>Toutes les annonces</h2>
-            <div class="listings-controls">
-              <select id="sort-select" class="sort-select">
-                <option value="created_at">Plus récentes</option>
-                <option value="price_asc">Prix croissant</option>
-                <option value="price_desc">Prix décroissant</option>
-              </select>
-            </div>
-          </div>
-          <div class="listings-content">
-            <div class="listings-filters">
-              <h3>Filtres</h3>
-              <div class="filter-group">
-                <label>Prix par nuit</label>
-                <div class="price-range">
-                  <input type="number" id="min-price" placeholder="Min">
-                  <input type="number" id="max-price" placeholder="Max">
+                <!-- Info -->
+                <div class="info">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="#0065FC" stroke-width="2"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="#0065FC" stroke-width="2"/>
+                  </svg>
+                  <span id="info-text">Plus de 500 logements sont disponibles dans cette ville</span>
                 </div>
               </div>
-              <div class="filter-group">
-                <label>Nombre de voyageurs</label>
-                <select id="guests-filter">
-                  <option value="">Tous</option>
-                  <option value="1">1 personne</option>
-                  <option value="2">2 personnes</option>
-                  <option value="4">4 personnes</option>
-                  <option value="6">6+ personnes</option>
-                </select>
-              </div>
-              <button class="apply-filters-btn" id="apply-filters">Appliquer</button>
             </div>
-            <div class="listings-results">
-              <div class="listings-grid" id="listings-grid">
+          </section>
+
+          <!-- Content Section -->
+          <div class="content-wrapper">
+            <!-- Accommodations -->
+            <section class="accommodations">
+              <h2>Hébergements à <span id="city-name">Marseille</span></h2>
+              <div class="accommodations-grid" id="accommodations-grid">
                 <!-- Cards will be generated by JavaScript -->
               </div>
-              <div class="pagination" id="pagination">
-                <!-- Pagination will be generated by JavaScript -->
+              <button class="show-more-btn" id="show-more-btn">Afficher plus</button>
+            </section>
+
+            <!-- Popular -->
+            <aside class="popular">
+              <div class="popular-header">
+                <h2>Les plus populaires</h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" fill="#0065FC"/>
+                </svg>
               </div>
-            </div>
+              <div class="popular-list" id="popular-list">
+                <!-- Popular cards will be generated by JavaScript -->
+              </div>
+            </aside>
           </div>
+
+          <!-- Activities -->
+          <section class="activities">
+            <h2>Activités à <span id="activities-city-name">Marseille</span></h2>
+            <div class="activities-grid" id="activities-grid">
+              <!-- Activity cards will be generated by JavaScript -->
+            </div>
+          </section>
         </div>
       </section>
 
@@ -161,12 +145,8 @@
               <h2 id="auth-title">Se connecter</h2>
               <form id="auth-form" class="auth-form">
                 <div class="form-group" id="name-group" style="display: none;">
-                  <label for="firstName">Prénom</label>
-                  <input type="text" id="firstName" name="firstName">
-                </div>
-                <div class="form-group" id="lastname-group" style="display: none;">
-                  <label for="lastName">Nom</label>
-                  <input type="text" id="lastName" name="lastName">
+                  <label for="name">Nom complet</label>
+                  <input type="text" id="name" name="name">
                 </div>
                 <div class="form-group">
                   <label for="email">Email</label>
@@ -187,91 +167,73 @@
         </div>
       </section>
 
-      <!-- Dashboard Page -->
-      <section id="dashboard-page" class="page">
+      <!-- Account Page -->
+      <section id="account-page" class="page">
         <div class="container">
-          <div class="dashboard-header">
-            <h2>Tableau de bord</h2>
-            <button class="btn-primary" id="create-listing-btn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2"/>
-              </svg>
-              Créer une annonce
-            </button>
-          </div>
-          
-          <div class="dashboard-stats">
-            <div class="stat-card">
-              <h3>Mes annonces</h3>
-              <div class="stat-number" id="user-listings-count">0</div>
+          <div class="account-container">
+            <div class="account-header">
+              <h2>Mon compte</h2>
+              <button id="logout-btn" class="logout-btn">Se déconnecter</button>
             </div>
-            <div class="stat-card">
-              <h3>Réservations reçues</h3>
-              <div class="stat-number" id="received-reservations-count">0</div>
-            </div>
-            <div class="stat-card">
-              <h3>Mes réservations</h3>
-              <div class="stat-number" id="my-reservations-count">0</div>
-            </div>
-            <div class="stat-card">
-              <h3>Messages non lus</h3>
-              <div class="stat-number" id="unread-messages-count">0</div>
-            </div>
-          </div>
-
-          <div class="dashboard-content">
-            <div class="dashboard-section">
-              <h3>Mes annonces</h3>
-              <div id="user-listings" class="listings-grid">
-                <!-- User listings will be displayed here -->
+            <div class="account-content">
+              <div class="user-info">
+                <h3>Informations personnelles</h3>
+                <p><strong>Nom :</strong> <span id="user-name"></span></p>
+                <p><strong>Email :</strong> <span id="user-email"></span></p>
               </div>
-            </div>
-
-            <div class="dashboard-section">
-              <h3>Réservations récentes</h3>
-              <div id="recent-reservations" class="reservations-list">
-                <!-- Recent reservations will be displayed here -->
+              <div class="reservations">
+                <h3>Mes réservations</h3>
+                <div id="reservations-list" class="reservations-list">
+                  <!-- Reservations will be displayed here -->
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Admin Page -->
-      <section id="admin-page" class="page">
+      <!-- Activities Page -->
+      <section id="activities-page" class="page">
         <div class="container">
-          <div class="admin-header">
-            <h2>Administration</h2>
-          </div>
-          
-          <div class="admin-stats">
-            <div class="stat-card">
-              <h3>Annonces en attente</h3>
-              <div class="stat-number" id="pending-listings-count">0</div>
-            </div>
-            <div class="stat-card">
-              <h3>Utilisateurs actifs</h3>
-              <div class="stat-number" id="active-users-count">0</div>
-            </div>
-            <div class="stat-card">
-              <h3>Réservations totales</h3>
-              <div class="stat-number" id="total-reservations-count">0</div>
-            </div>
-          </div>
-
-          <div class="admin-content">
-            <div class="admin-section">
-              <h3>Annonces en attente de validation</h3>
-              <div id="pending-listings" class="admin-listings">
-                <!-- Pending listings will be displayed here -->
-              </div>
-            </div>
+          <h2>Activités à <span id="activities-page-city">Marseille</span></h2>
+          <div class="activities-grid" id="activities-page-grid">
+            <!-- Activity cards will be generated by JavaScript -->
           </div>
         </div>
       </section>
     </main>
 
-    <!-- Modal for listing details -->
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>À propos</h3>
+            <ul>
+              <li><a href="#">Fonctionnement du site</a></li>
+              <li><a href="#">Conditions générales</a></li>
+              <li><a href="#">Données et confidentialité</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3>Nos hébergements</h3>
+            <ul>
+              <li><a href="#">Charte qualité</a></li>
+              <li><a href="#">Proposer votre hôtel</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3>Assistance</h3>
+            <ul>
+              <li><a href="#">Centre d'aide</a></li>
+              <li><a href="#">Nous contacter</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Modal for accommodation details -->
     <div id="modal" class="modal">
       <div class="modal-content">
         <span class="modal-close">&times;</span>
@@ -280,121 +242,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Create/Edit Listing Modal -->
-    <div id="listing-modal" class="modal">
-      <div class="modal-content">
-        <span class="modal-close" id="listing-modal-close">&times;</span>
-        <div class="modal-body">
-          <h2 id="listing-modal-title">Créer une annonce</h2>
-          <form id="listing-form" class="listing-form">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="listing-title">Titre</label>
-                <input type="text" id="listing-title" name="title" required>
-              </div>
-              <div class="form-group">
-                <label for="listing-category">Catégorie</label>
-                <select id="listing-category" name="category" required>
-                  <option value="">Sélectionner</option>
-                  <option value="apartment">Appartement</option>
-                  <option value="house">Maison</option>
-                  <option value="studio">Studio</option>
-                  <option value="villa">Villa</option>
-                  <option value="room">Chambre</option>
-                </select>
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="listing-description">Description</label>
-              <textarea id="listing-description" name="description" rows="4" required></textarea>
-            </div>
-            
-            <div class="form-row">
-              <div class="form-group">
-                <label for="listing-price">Prix par nuit (€)</label>
-                <input type="number" id="listing-price" name="pricePerNight" min="1" required>
-              </div>
-              <div class="form-group">
-                <label for="listing-guests">Nombre max de voyageurs</label>
-                <input type="number" id="listing-guests" name="maxGuests" min="1" required>
-              </div>
-            </div>
-            
-            <div class="form-row">
-              <div class="form-group">
-                <label for="listing-bedrooms">Chambres</label>
-                <input type="number" id="listing-bedrooms" name="bedrooms" min="0" required>
-              </div>
-              <div class="form-group">
-                <label for="listing-bathrooms">Salles de bain</label>
-                <input type="number" id="listing-bathrooms" name="bathrooms" min="0" required>
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="listing-address">Adresse</label>
-              <input type="text" id="listing-address" name="address" required>
-            </div>
-            
-            <div class="form-row">
-              <div class="form-group">
-                <label for="listing-city">Ville</label>
-                <input type="text" id="listing-city" name="city" required>
-              </div>
-              <div class="form-group">
-                <label for="listing-postal-code">Code postal</label>
-                <input type="text" id="listing-postal-code" name="postalCode" required>
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="listing-country">Pays</label>
-              <input type="text" id="listing-country" name="country" value="France" required>
-            </div>
-            
-            <div class="form-group">
-              <label>Équipements</label>
-              <div class="amenities-grid">
-                <label class="amenity-item">
-                  <input type="checkbox" name="amenities" value="wifi">
-                  <span>WiFi</span>
-                </label>
-                <label class="amenity-item">
-                  <input type="checkbox" name="amenities" value="parking">
-                  <span>Parking</span>
-                </label>
-                <label class="amenity-item">
-                  <input type="checkbox" name="amenities" value="kitchen">
-                  <span>Cuisine équipée</span>
-                </label>
-                <label class="amenity-item">
-                  <input type="checkbox" name="amenities" value="air_conditioning">
-                  <span>Climatisation</span>
-                </label>
-                <label class="amenity-item">
-                  <input type="checkbox" name="amenities" value="pool">
-                  <span>Piscine</span>
-                </label>
-                <label class="amenity-item">
-                  <input type="checkbox" name="amenities" value="pets_allowed">
-                  <span>Animaux acceptés</span>
-                </label>
-              </div>
-            </div>
-            
-            <div class="form-actions">
-              <button type="button" class="btn-secondary" id="cancel-listing">Annuler</button>
-              <button type="submit" class="btn-primary">Publier l'annonce</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- Notification Container -->
-    <div id="notifications" class="notifications-container"></div>
 
     <!-- Scripts -->
     <script type="module" src="./src/js/main.js"></script>
