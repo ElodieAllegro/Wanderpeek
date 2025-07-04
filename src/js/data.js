@@ -1,15 +1,5 @@
-// Data simulation for accommodations, activities, and cities
 export const cities = [
-  'Marseille',
-  'Paris',
-  'Lyon',
-  'Toulouse',
-  'Nice',
-  'Nantes',
-  'Strasbourg',
-  'Montpellier',
-  'Bordeaux',
-  'Lille'
+  'Marseille', 'Paris', 'Lyon', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille'
 ];
 
 export const accommodations = {
@@ -21,7 +11,7 @@ export const accommodations = {
       rating: 4,
       image: 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
       category: 'economique',
-      description: 'Situé au cœur du Vieux-Port de Marseille, cet hôtel charme par son emplacement exceptionnel et ses chambres confortables avec vue sur le port. Parfait pour explorer la ville à pied.',
+      description: 'Situé au cœur du Vieux-Port de Marseille, cet hôtel charme par son emplacement exceptionnel et ses chambres confortables avec vue sur le port.',
       amenities: ['WiFi gratuit', 'Climatisation', 'Vue sur le port', 'Petit-déjeuner']
     },
     {
@@ -31,7 +21,7 @@ export const accommodations = {
       rating: 4,
       image: 'https://images.pexels.com/photos/279746/pexels-photo-279746.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
       category: 'familial',
-      description: 'Hôtel familial chaleureux proposant des chambres spacieuses et un service personnalisé. Idéal pour les familles avec enfants.',
+      description: 'Hôtel familial chaleureux proposant des chambres spacieuses et un service personnalisé.',
       amenities: ['WiFi gratuit', 'Climatisation', 'Chambre familiale', 'Parking']
     },
     {
@@ -41,7 +31,7 @@ export const accommodations = {
       rating: 4,
       image: 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
       category: 'romantique',
-      description: 'Établissement romantique avec terrasse panoramique sur la Méditerranée. Parfait pour un séjour en amoureux.',
+      description: 'Établissement romantique avec terrasse panoramique sur la Méditerranée.',
       amenities: ['WiFi gratuit', 'Terrasse', 'Vue mer', 'Room service']
     },
     {
@@ -51,7 +41,7 @@ export const accommodations = {
       rating: 4,
       image: 'https://images.pexels.com/photos/338504/pexels-photo-338504.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
       category: 'economique',
-      description: 'Hôtel économique près de la plage avec un excellent rapport qualité-prix. Chambres simples mais confortables.',
+      description: 'Hôtel économique près de la plage avec un excellent rapport qualité-prix.',
       amenities: ['WiFi gratuit', 'Proche plage', 'Réception 24h/24']
     },
     {
@@ -71,7 +61,7 @@ export const accommodations = {
       rating: 4,
       image: 'https://images.pexels.com/photos/1134176/pexels-photo-1134176.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
       category: 'economique',
-      description: 'Auberge de jeunesse dans le quartier historique du Panier. Ambiance conviviale et prix attractifs.',
+      description: 'Auberge de jeunesse dans le quartier historique du Panier.',
       amenities: ['WiFi gratuit', 'Cuisine commune', 'Centre historique', 'Bagagerie']
     }
   ],
@@ -83,7 +73,7 @@ export const accommodations = {
       rating: 5,
       image: 'https://images.pexels.com/photos/2869215/pexels-photo-2869215.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
       category: 'romantique',
-      description: 'Hôtel de charme au cœur du Marais historique, avec des chambres élégantes et un service raffiné.',
+      description: 'Hôtel de charme au cœur du Marais historique.',
       amenities: ['WiFi gratuit', 'Climatisation', 'Concierge', 'Centre historique']
     },
     {
@@ -93,7 +83,7 @@ export const accommodations = {
       rating: 4,
       image: 'https://images.pexels.com/photos/594077/pexels-photo-594077.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
       category: 'pepites',
-      description: 'Hôtel pittoresque à Montmartre, près du Sacré-Cœur, offrant une vue imprenable sur Paris.',
+      description: 'Hôtel pittoresque à Montmartre, près du Sacré-Cœur.',
       amenities: ['WiFi gratuit', 'Vue panoramique', 'Ascenseur', 'Proche métro']
     }
   ],
@@ -105,7 +95,7 @@ export const accommodations = {
       rating: 4,
       image: 'https://images.pexels.com/photos/1001965/pexels-photo-1001965.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
       category: 'familial',
-      description: 'Hôtel moderne dans le centre de Lyon, idéal pour découvrir la gastronomie lyonnaise.',
+      description: 'Hôtel moderne dans le centre de Lyon.',
       amenities: ['WiFi gratuit', 'Restaurant', 'Centre-ville', 'Parking']
     }
   ]
@@ -139,7 +129,7 @@ export const popularAccommodations = [
     rating: 4,
     image: 'https://images.pexels.com/photos/2017802/pexels-photo-2017802.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
     city: 'Marseille',
-    description: 'Hôtel design aux couleurs de la Méditerranée, proche des Calanques.',
+    description: 'Hôtel design aux couleurs de la Méditerranée.',
     amenities: ['Design moderne', 'Proche Calanques', 'Terrasse', 'Climatisation']
   }
 ];
@@ -156,19 +146,19 @@ export const activities = {
       id: 202,
       title: 'Fort de Pomègues',
       image: 'https://images.pexels.com/photos/3061217/pexels-photo-3061217.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      description: 'Forteresse historique sur l\'archipel du Frioul, accessible en ferry depuis le Vieux-Port.'
+      description: 'Forteresse historique sur l\'archipel du Frioul.'
     },
     {
       id: 203,
       title: 'Parc national des Calanques',
       image: 'https://images.pexels.com/photos/1659438/pexels-photo-1659438.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      description: 'Paysages à couper le souffle entre mer et montagne, idéal pour la randonnée.'
+      description: 'Paysages à couper le souffle entre mer et montagne.'
     },
     {
       id: 204,
       title: 'Notre-Dame-de-la-Garde',
       image: 'https://images.pexels.com/photos/2901215/pexels-photo-2901215.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      description: 'Basilique emblématique offrant une vue panoramique sur toute la ville et la mer.'
+      description: 'Basilique emblématique offrant une vue panoramique sur la ville.'
     }
   ],
   'Paris': [
@@ -195,7 +185,6 @@ export const activities = {
   ]
 };
 
-// Generate star rating HTML
 export function generateStars(rating) {
   let starsHTML = '';
   for (let i = 1; i <= 5; i++) {
@@ -208,44 +197,25 @@ export function generateStars(rating) {
   return starsHTML;
 }
 
-// Get random accommodations for other cities
 export function getRandomAccommodations(city, count = 6) {
   const templates = [
-    {
-      title: 'Hôtel Central',
-      priceRange: [60, 120],
-      categories: ['familial', 'economique']
-    },
-    {
-      title: 'Auberge du Centre',
-      priceRange: [30, 80],
-      categories: ['economique', 'pepites']
-    },
-    {
-      title: 'Hôtel de Luxe',
-      priceRange: [100, 200],
-      categories: ['romantique', 'pepites']
-    },
-    {
-      title: 'Pension de Famille',
-      priceRange: [40, 90],
-      categories: ['familial', 'economique']
-    }
+    { title: 'Hôtel Central', priceRange: [60, 120], categories: ['familial', 'economique'] },
+    { title: 'Auberge du Centre', priceRange: [30, 80], categories: ['economique', 'pepites'] },
+    { title: 'Hôtel de Luxe', priceRange: [100, 200], categories: ['romantique', 'pepites'] },
+    { title: 'Pension de Famille', priceRange: [40, 90], categories: ['familial', 'economique'] }
   ];
   
   const images = [
     'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
     'https://images.pexels.com/photos/279746/pexels-photo-279746.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
     'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-    'https://images.pexels.com/photos/338504/pexels-photo-338504.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-    'https://images.pexels.com/photos/1579253/pexels-photo-1579253.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-    'https://images.pexels.com/photos/1134176/pexels-photo-1134176.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
+    'https://images.pexels.com/photos/338504/pexels-photo-338504.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
   ];
   
   return Array.from({ length: count }, (_, index) => {
     const template = templates[index % templates.length];
     const price = Math.floor(Math.random() * (template.priceRange[1] - template.priceRange[0])) + template.priceRange[0];
-    const rating = Math.floor(Math.random() * 2) + 4; // 4 or 5 stars
+    const rating = Math.floor(Math.random() * 2) + 4;
     const category = template.categories[Math.floor(Math.random() * template.categories.length)];
     
     return {
@@ -255,7 +225,7 @@ export function getRandomAccommodations(city, count = 6) {
       rating,
       image: images[index % images.length],
       category,
-      description: `Hébergement confortable au cœur de ${city}, offrant un excellent rapport qualité-prix.`,
+      description: `Hébergement confortable au cœur de ${city}.`,
       amenities: ['WiFi gratuit', 'Climatisation', 'Réception 24h/24']
     };
   });

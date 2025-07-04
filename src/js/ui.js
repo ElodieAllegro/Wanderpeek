@@ -1,4 +1,3 @@
-// UI management and DOM manipulation
 import { generateStars } from './data.js';
 
 export class UIManager {
@@ -8,20 +7,16 @@ export class UIManager {
     this.modalBody = document.getElementById('modal-body');
   }
 
-  // Show specific page
   showPage(pageId) {
-    // Hide all pages
     const pages = document.querySelectorAll('.page');
     pages.forEach(page => page.classList.remove('active'));
 
-    // Show requested page
     const targetPage = document.getElementById(`${pageId}-page`);
     if (targetPage) {
       targetPage.classList.add('active');
       this.currentPage = pageId;
     }
 
-    // Update nav links
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
       link.classList.remove('active');
@@ -30,11 +25,9 @@ export class UIManager {
       }
     });
 
-    // Scroll to top
     window.scrollTo(0, 0);
   }
 
-  // Render accommodation cards
   renderAccommodationCards(accommodations, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -53,7 +46,6 @@ export class UIManager {
     `).join('');
   }
 
-  // Render popular accommodation cards
   renderPopularCards(accommodations, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -72,7 +64,6 @@ export class UIManager {
     `).join('');
   }
 
-  // Render activity cards
   renderActivityCards(activities, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -87,7 +78,6 @@ export class UIManager {
     `).join('');
   }
 
-  // Show accommodation modal
   showAccommodationModal(accommodation) {
     const modalContent = `
       <div class="modal-header">
@@ -157,12 +147,10 @@ export class UIManager {
     this.modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 
-    // Set minimum dates
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('checkin').min = today;
     document.getElementById('checkout').min = today;
 
-    // Update checkout min date when checkin changes
     document.getElementById('checkin').addEventListener('change', (e) => {
       const checkinDate = new Date(e.target.value);
       checkinDate.setDate(checkinDate.getDate() + 1);
@@ -170,7 +158,6 @@ export class UIManager {
     });
   }
 
-  // Show activity modal
   showActivityModal(activity) {
     const modalContent = `
       <div class="modal-header">
@@ -191,13 +178,11 @@ export class UIManager {
     document.body.style.overflow = 'hidden';
   }
 
-  // Close modal
   closeModal() {
     this.modal.classList.remove('active');
     document.body.style.overflow = '';
   }
 
-  // Update auth UI
   updateAuthUI(user) {
     const authLink = document.getElementById('auth-link');
     if (user) {
@@ -209,7 +194,6 @@ export class UIManager {
     }
   }
 
-  // Render user reservations
   renderReservations(reservations) {
     const container = document.getElementById('reservations-list');
     if (!container) return;
@@ -233,13 +217,11 @@ export class UIManager {
     `).join('');
   }
 
-  // Format date for display
   formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString('fr-FR');
   }
 
-  // Get status text in French
   getStatusText(status) {
     const statusMap = {
       'pending': 'En attente',
@@ -249,21 +231,19 @@ export class UIManager {
     return statusMap[status] || status;
   }
 
-  // Show notification
   showNotification(message, type = 'success') {
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.style.cssText = `
       position: fixed;
       top: 100px;
       right: 20px;
-      background: ${type === 'success' ? 'var(--success)' : 'var(--error)'};
+      background: ${type === 'success' ? '#00A693' : '#FF6B6B'};
       color: white;
       padding: 16px 24px;
       border-radius: 8px;
       z-index: 3000;
-      box-shadow: var(--shadow-medium);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
       transform: translateX(100%);
       transition: transform 0.3s ease;
     `;
@@ -271,12 +251,10 @@ export class UIManager {
 
     document.body.appendChild(notification);
 
-    // Animate in
     setTimeout(() => {
       notification.style.transform = 'translateX(0)';
     }, 100);
 
-    // Remove after delay
     setTimeout(() => {
       notification.style.transform = 'translateX(100%)';
       setTimeout(() => {
@@ -285,12 +263,6 @@ export class UIManager {
     }, 3000);
   }
 
-  // Toggle filter active state
-  toggleFilter(filterElement) {
-    filterElement.classList.toggle('active');
-  }
-
-  // Update city name in various places
   updateCityName(cityName) {
     const elements = [
       document.getElementById('city-name'),
@@ -305,7 +277,6 @@ export class UIManager {
     });
   }
 
-  // Update info text
   updateInfoText(text) {
     const infoElement = document.getElementById('info-text');
     if (infoElement) {
