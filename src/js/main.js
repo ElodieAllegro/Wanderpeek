@@ -89,6 +89,30 @@ class WanderpeekApp {
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') this.uiManager.closeModal();
     });
+
+    // Propose hotel form
+    document.addEventListener('submit', (e) => {
+      if (e.target.id === 'proposal-form') {
+        e.preventDefault();
+        this.handleHotelProposal(e);
+      }
+    });
+
+    // Hotel proposal modal
+    document.getElementById('propose-hotel-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      this.openHotelProposalModal();
+    });
+
+    document.querySelector('.hotel-proposal-close').addEventListener('click', () => {
+      this.closeHotelProposalModal();
+    });
+
+    document.getElementById('hotel-proposal-modal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        this.closeHotelProposalModal();
+      }
+    });
   }
 
   loadInitialData() {
@@ -343,6 +367,65 @@ class WanderpeekApp {
     } else {
       this.uiManager.showNotification(result.message, 'error');
     }
+  }
+
+  openHotelProposalModal() {
+    const modal = document.getElementById('hotel-proposal-modal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeHotelProposalModal() {
+    const modal = document.getElementById('hotel-proposal-modal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  handleHotelProposal(e) {
+    const formData = new FormData(e.target);
+    
+    // Collect amenities
+    const amenities = [];
+    const amenityCheckboxes = document.querySelectorAll('input[name="amenities"]:checked');
+    amenityCheckboxes.forEach(checkbox => {
+      amenities.push(checkbox.value);
+    });
+
+    const proposalData = {
+      hotelName: formData.get('hotelName'),
+      hotelType: formData.get('hotelType'),
+      hotelDescription: formData.get('hotelDescription'),
+      hotelAddress: formData.get('hotelAddress'),
+      hotelCity: formData.get('hotelCity'),
+      hotelPostal: formData.get('hotelPostal'),
+      hotelRooms: formData.get('hotelRooms'),
+      hotelCapacity: formData.get('hotelCapacity'),
+      amenities: amenities,
+      contactName: formData.get('contactName'),
+      contactEmail: formData.get('contactEmail'),
+      contactPhone: formData.get('contactPhone'),
+      contactWebsite: formData.get('contactWebsite'),
+      additionalInfo: formData.get('additionalInfo'),
+      submittedAt: new Date().toISOString(),
+      status: 'pending'
+    };
+
+    // Save to localStorage
+    const proposals = JSON.parse(localStorage.getItem('hotelProposals') || '[]');
+    proposals.push({
+      id: Date.now(),
+      ...proposalData
+    });
+    localStorage.setItem('hotelProposals', JSON.stringify(proposals));
+
+    // Show success message
+    this.uiManager.showNotification('Votre proposition a été envoyée avec succès ! Nous vous contacterons dans les plus brefs délais.');
+    
+    // Close modal
+    this.closeHotelProposalModal();
+    
+    // Reset form
+    e.target.reset();
   }
 }
 
