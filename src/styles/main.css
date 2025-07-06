@@ -1098,6 +1098,7 @@ textarea:focus {
   max-width: 900px;
   max-height: 90vh;
   overflow-y: auto;
+  width: 100%;
 }
 
 .propose-hotel-header {
@@ -1171,6 +1172,7 @@ textarea:focus {
   background-color: var(--secondary-color);
   padding: var(--spacing-xl);
   border-radius: var(--border-radius-lg);
+  width: 100%;
 }
 
 .proposal-form-section h3 {
@@ -1184,6 +1186,7 @@ textarea:focus {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xl);
+  width: 100%;
 }
 
 .form-section {
@@ -1191,6 +1194,8 @@ textarea:focus {
   padding: var(--spacing-lg);
   border-radius: var(--border-radius-md);
   box-shadow: var(--shadow-light);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .form-section h4 {
@@ -1214,6 +1219,7 @@ textarea:focus {
   flex-direction: column;
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-md);
+  width: 100%;
 }
 
 .form-group label {
@@ -1231,6 +1237,8 @@ textarea:focus {
   font-size: var(--font-size-base);
   font-family: inherit;
   transition: var(--transition-fast);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .form-group input:focus,
@@ -1251,6 +1259,7 @@ textarea:focus {
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: var(--spacing-sm);
   margin-top: var(--spacing-sm);
+  width: 100%;
 }
 
 .amenity-checkbox {
@@ -1284,6 +1293,7 @@ textarea:focus {
 .form-actions {
   text-align: center;
   padding-top: var(--spacing-lg);
+  width: 100%;
 }
 
 .submit-proposal-btn {
@@ -1317,6 +1327,7 @@ textarea:focus {
   .hotel-proposal-modal-content {
     width: 95%;
     margin: var(--spacing-md);
+    max-width: none;
   }
   
   .form-row {
@@ -1337,5 +1348,32 @@ textarea:focus {
   
   .form-section {
     padding: var(--spacing-md);
+  }
+  
+  .modal-body {
+    padding: var(--spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .hotel-proposal-modal-content {
+    width: 98%;
+    margin: var(--spacing-sm);
+  }
+  
+  .propose-hotel-header h2 {
+    font-size: var(--font-size-xl);
+  }
+  
+  .proposal-form-section {
+    padding: var(--spacing-md);
+  }
+  
+  .form-section {
+    padding: var(--spacing-sm);
+  }
+  
+  .modal-body {
+    padding: var(--spacing-sm);
   }
 }
