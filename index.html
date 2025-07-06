@@ -203,6 +203,8 @@
       </section>
     </main>
 
+    <!-- Propose Hotel Page -->
+
     <!-- Footer -->
     <footer class="footer">
       <div class="container">
@@ -219,7 +221,7 @@
             <h3>Nos hébergements</h3>
             <ul>
               <li><a href="#">Charte qualité</a></li>
-              <li><a href="#">Proposer votre hôtel</a></li>
+              <li><a href="#" id="propose-hotel-btn">Proposer votre hôtel</a></li>
             </ul>
           </div>
           <div class="footer-section">
@@ -243,6 +245,201 @@
       </div>
     </div>
 
+    <!-- Hotel Proposal Modal -->
+    <div id="hotel-proposal-modal" class="modal">
+      <div class="modal-content hotel-proposal-modal-content">
+        <span class="modal-close hotel-proposal-close">&times;</span>
+        <div class="modal-body">
+          <div class="propose-hotel-header">
+            <h2>Proposer votre hôtel</h2>
+            <p class="subtitle">Rejoignez notre réseau d'hébergements de qualité</p>
+          </div>
+          
+          <div class="benefits-section">
+            <h3>Pourquoi rejoindre Wanderpeek ?</h3>
+            <div class="benefits-grid">
+              <div class="benefit-item">
+                <div class="benefit-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" fill="#0065FC"/>
+                  </svg>
+                </div>
+                <h4>Visibilité maximale</h4>
+                <p>Votre établissement sera visible par des milliers de voyageurs</p>
+              </div>
+              <div class="benefit-item">
+                <div class="benefit-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#0065FC"/>
+                    <circle cx="12" cy="9" r="2.5" fill="white"/>
+                  </svg>
+                </div>
+                <h4>Gestion simplifiée</h4>
+                <p>Interface intuitive pour gérer vos réservations et disponibilités</p>
+              </div>
+              <div class="benefit-item">
+                <div class="benefit-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="#0065FC" stroke-width="2"/>
+                  </svg>
+                </div>
+                <h4>Commission attractive</h4>
+                <p>Tarifs compétitifs et paiements sécurisés</p>
+              </div>
+              <div class="benefit-item">
+                <div class="benefit-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="#0065FC" stroke-width="2"/>
+                  </svg>
+          <div class="proposal-form-section">
+            <h3>Proposer votre établissement</h3>
+            <form class="proposal-form" id="proposal-form">
+              <div class="form-section">
+                <h4>Informations sur l'établissement</h4>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="hotel-name">Nom de l'établissement *</label>
+                    <input type="text" id="hotel-name" name="hotelName" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="hotel-type">Type d'hébergement *</label>
+                    <select id="hotel-type" name="hotelType" required>
+                      <option value="">Sélectionnez un type</option>
+                      <option value="hotel">Hôtel</option>
+                      <option value="apartment">Appartement</option>
+                      <option value="house">Maison</option>
+                      <option value="villa">Villa</option>
+                      <option value="studio">Studio</option>
+                      <option value="guesthouse">Maison d'hôtes</option>
+                      <option value="other">Autre</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="hotel-description">Description de l'établissement *</label>
+                  <textarea id="hotel-description" name="hotelDescription" rows="4" required 
+                            placeholder="Décrivez votre établissement, ses atouts, son ambiance..."></textarea>
+                </div>
+              </div>
+                </div>
+              <div class="form-section">
+                <h4>Localisation</h4>
+                <div class="form-group">
+                  <label for="hotel-address">Adresse complète *</label>
+                  <input type="text" id="hotel-address" name="hotelAddress" required>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="hotel-city">Ville *</label>
+                    <input type="text" id="hotel-city" name="hotelCity" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="hotel-postal">Code postal *</label>
+                    <input type="text" id="hotel-postal" name="hotelPostal" required>
+                  </div>
+                </div>
+              </div>
+                <h4>Support dédié</h4>
+              <div class="form-section">
+                <h4>Capacité et équipements</h4>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="hotel-rooms">Nombre de chambres *</label>
+                    <input type="number" id="hotel-rooms" name="hotelRooms" min="1" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="hotel-capacity">Capacité maximale *</label>
+                    <input type="number" id="hotel-capacity" name="hotelCapacity" min="1" required>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label>Équipements disponibles</label>
+                  <div class="amenities-grid">
+                    <label class="amenity-checkbox">
+                      <input type="checkbox" name="amenities" value="wifi">
+                      <span>WiFi gratuit</span>
+                    </label>
+                    <label class="amenity-checkbox">
+                      <input type="checkbox" name="amenities" value="parking">
+                      <span>Parking</span>
+                    </label>
+                    <label class="amenity-checkbox">
+                      <input type="checkbox" name="amenities" value="pool">
+                      <span>Piscine</span>
+                    </label>
+                    <label class="amenity-checkbox">
+                      <input type="checkbox" name="amenities" value="restaurant">
+                      <span>Restaurant</span>
+                    </label>
+                    <label class="amenity-checkbox">
+                      <input type="checkbox" name="amenities" value="spa">
+                      <span>Spa</span>
+                    </label>
+                    <label class="amenity-checkbox">
+                      <input type="checkbox" name="amenities" value="gym">
+                      <span>Salle de sport</span>
+                    </label>
+                    <label class="amenity-checkbox">
+                      <input type="checkbox" name="amenities" value="pets">
+                      <span>Animaux acceptés</span>
+                    </label>
+                    <label class="amenity-checkbox">
+                      <input type="checkbox" name="amenities" value="ac">
+                      <span>Climatisation</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+                <p>Équipe d'assistance disponible pour vous accompagner</p>
+              <div class="form-section">
+                <h4>Informations de contact</h4>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="contact-name">Nom du responsable *</label>
+                    <input type="text" id="contact-name" name="contactName" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="contact-email">Email de contact *</label>
+                    <input type="email" id="contact-email" name="contactEmail" required>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="contact-phone">Téléphone *</label>
+                    <input type="tel" id="contact-phone" name="contactPhone" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="contact-website">Site web (optionnel)</label>
+                    <input type="url" id="contact-website" name="contactWebsite" placeholder="https://">
+                  </div>
+                </div>
+              </div>
+              </div>
+              <div class="form-section">
+                <h4>Informations complémentaires</h4>
+                <div class="form-group">
+                  <label for="additional-info">Message (optionnel)</label>
+                  <textarea id="additional-info" name="additionalInfo" rows="3" 
+                            placeholder="Informations supplémentaires, questions, demandes particulières..."></textarea>
+                </div>
+              </div>
+            </div>
+              <div class="form-actions">
+                <button type="submit" class="submit-proposal-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" fill="white"/>
+                  </svg>
+                  Envoyer ma proposition
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+          </div>
     <!-- Scripts -->
     <script type="module" src="./src/js/main.js"></script>
   </body>
