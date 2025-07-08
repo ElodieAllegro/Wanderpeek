@@ -106,7 +106,8 @@ serve(async (req) => {
           contact_email: hotelData.contactEmail,
           contact_phone: hotelData.contactPhone,
           website: hotelData.contactWebsite,
-          additional_info: hotelData.additionalInfo
+          additional_info: hotelData.additionalInfo,
+          image: hotelData.images && hotelData.images.length > 0 ? hotelData.images[0] : null
         })
         .select()
         .single()

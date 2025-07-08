@@ -491,6 +491,37 @@
               <div class="form-section">
                 <h4>Informations complémentaires</h4>
                 <div class="form-group">
+                  <label for="hotel-images">Photos de l'établissement</label>
+                  <div class="image-upload-section">
+                    <div class="image-upload-area" id="image-upload-area">
+                      <div class="upload-placeholder">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#0065FC" stroke-width="2">
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                          <circle cx="8.5" cy="8.5" r="1.5"/>
+                          <polyline points="21,15 16,10 5,21"/>
+                        </svg>
+                        <p>Cliquez pour ajouter des photos ou glissez-déposez</p>
+                        <p class="upload-hint">Formats acceptés: JPG, PNG, WebP (max 5MB par image)</p>
+                      </div>
+                      <input type="file" id="hotel-images" name="hotelImages" multiple accept="image/*" style="display: none;">
+                    </div>
+                    <div class="image-preview-container" id="image-preview-container">
+                      <!-- Les aperçus des images apparaîtront ici -->
+                    </div>
+                    <div class="image-url-section">
+                      <label for="image-urls">Ou ajoutez des URLs d'images</label>
+                      <div class="url-input-group">
+                        <input type="url" id="image-url-input" placeholder="https://exemple.com/image.jpg">
+                        <button type="button" id="add-url-btn" class="add-url-btn">Ajouter</button>
+                      </div>
+                      <div class="url-images-list" id="url-images-list">
+                        <!-- Les URLs ajoutées apparaîtront ici -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="form-group">
                   <label for="additional-info">Message (optionnel)</label>
                   <textarea id="additional-info" name="additionalInfo" rows="3" 
                             placeholder="Informations supplémentaires, questions, demandes particulières..."></textarea>

@@ -121,6 +121,9 @@ class WanderpeekSupabaseApp {
       }
     })
 
+    // Image upload functionality
+    this.setupImageUpload()
+
     // Admin dashboard events
     document.addEventListener('click', (e) => {
       // Admin tab switching
@@ -473,12 +476,14 @@ class WanderpeekSupabaseApp {
     const modal = document.getElementById('hotel-proposal-modal')
     modal.classList.add('active')
     document.body.style.overflow = 'hidden'
+    this.initializeImageUpload()
   }
 
   closeHotelProposalModal() {
     const modal = document.getElementById('hotel-proposal-modal')
     modal.classList.remove('active')
     document.body.style.overflow = ''
+    this.resetImageUpload()
   }
 
   async handleHotelProposal(e) {
@@ -490,6 +495,9 @@ class WanderpeekSupabaseApp {
     amenityCheckboxes.forEach(checkbox => {
       amenities.push(checkbox.value)
     })
+
+    // Collect images
+    const images = this.getSelectedImages()
 
     const proposalData = {
       hotelName: formData.get('hotelName'),
@@ -505,7 +513,8 @@ class WanderpeekSupabaseApp {
       contactEmail: formData.get('contactEmail'),
       contactPhone: formData.get('contactPhone'),
       contactWebsite: formData.get('contactWebsite'),
-      additionalInfo: formData.get('additionalInfo')
+      additionalInfo: formData.get('additionalInfo'),
+      images: images
     }
 
     try {
@@ -946,8 +955,204 @@ class WanderpeekSupabaseApp {
     }
     return typeMap[type] || type
   }
+
+  // Image upload functionality
+  setupImageUpload() {
+    // This will be called once when the app initializes
+  }
+
+  initializeImageUpload() {
+    const uploadArea = document.getElementById('image-upload-area')
+    const fileInput = document.getElementById('hotel-images')
+    const addUrlBtn = document.getElementById('add-url-btn')
+    const urlInput = document.getElementById('image-url-input')
+
+    // File upload via click
+    uploadArea.addEventListener('click', () => {
+      fileInput.click()
+    })
+
+    // File upload via drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault()
+      uploadArea.classList.add('dragover')
+    })
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover')
+    })
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault()
+      uploadArea.classList.remove('dragover')
+      const files = Array.from(e.dataTransfer.files)
+      this.handleFileSelection(files)
+    })
+
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files)
+      this.handleFileSelection(files)
+    })
+
+    // URL input
+    addUrlBtn.addEventListener('click', () => {
+      const url = urlInput.value.trim()
+      if (url) {
+        this.addImageUrl(url)
+        urlInput.value = ''
+      }
+    })
+
+    urlInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        const url = urlInput.value.trim()
+        if (url) {
+          this.addImageUrl(url)
+          urlInput.value = ''
+        }
+      }
+    })
+  }
+
+  handleFileSelection(files) {
+    const validFiles = files.filter(file => {
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        this.uiManager.showNotification('Seuls les fichiers image sont acceptés', 'error')
+        return false
+      }
+      
+      // Check file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        this.uiManager.showNotification('La taille du fichier ne doit pas dépasser 5MB', 'error')
+        return false
+      }
+      
+      return true
+    })
+
+    validFiles.forEach(file => {
+      this.addImageFile(file)
+    })
+  }
+
+  addImageFile(file) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const imageData = {
+        type: 'file',
+        file: file,
+        url: e.target.result,
+        name: file.name
+      }
+      this.addImagePreview(imageData)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  addImageUrl(url) {
+    // Validate URL format
+    try {
+      new URL(url)
+    } catch {
+      this.uiManager.showNotification('URL invalide', 'error')
+      return
+    }
+
+    const imageData = {
+      type: 'url',
+      url: url,
+      name: url.split('/').pop() || 'Image'
+    }
+
+    // Test if the URL is a valid image
+    const img = new Image()
+    img.onload = () => {
+      this.addImagePreview(imageData)
+    }
+    img.onerror = () => {
+      this.uiManager.showNotification('URL d\'image invalide ou inaccessible', 'error')
+    }
+    img.src = url
+  }
+
+  addImagePreview(imageData) {
+    const container = document.getElementById('image-preview-container')
+    const previewId = `preview-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    
+    const previewElement = document.createElement('div')
+    previewElement.className = 'image-preview'
+    previewElement.dataset.imageId = previewId
+    previewElement.innerHTML = `
+      <img src="${imageData.url}" alt="${imageData.name}">
+      <div class="image-preview-overlay">
+        <button type="button" class="remove-image-btn" onclick="window.wanderpeekApp.removeImage('${previewId}')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    `
+    
+    container.appendChild(previewElement)
+    
+    // Store image data
+    if (!this.selectedImages) {
+      this.selectedImages = new Map()
+    }
+    this.selectedImages.set(previewId, imageData)
+  }
+
+  removeImage(imageId) {
+    const previewElement = document.querySelector(`[data-image-id="${imageId}"]`)
+    if (previewElement) {
+      previewElement.remove()
+    }
+    
+    if (this.selectedImages) {
+      this.selectedImages.delete(imageId)
+    }
+  }
+
+  getSelectedImages() {
+    if (!this.selectedImages) {
+      return []
+    }
+    
+    return Array.from(this.selectedImages.values()).map(imageData => {
+      if (imageData.type === 'url') {
+        return imageData.url
+      } else {
+        // For file uploads, we'll use the data URL for now
+        // In a real application, you would upload the file to a storage service
+        return imageData.url
+      }
+    })
+  }
+
+  resetImageUpload() {
+    const container = document.getElementById('image-preview-container')
+    if (container) {
+      container.innerHTML = ''
+    }
+    
+    const urlInput = document.getElementById('image-url-input')
+    if (urlInput) {
+      urlInput.value = ''
+    }
+    
+    const fileInput = document.getElementById('hotel-images')
+    if (fileInput) {
+      fileInput.value = ''
+    }
+    
+    this.selectedImages = new Map()
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  new WanderpeekSupabaseApp()
+  window.wanderpeekApp = new WanderpeekSupabaseApp()
 })

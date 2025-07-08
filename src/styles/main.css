@@ -1845,6 +1845,210 @@ textarea:focus {
   }
 }
 
+/* Image Upload Styles */
+.image-upload-section {
+  margin-top: var(--spacing-sm);
+}
+
+.image-upload-area {
+  border: 2px dashed var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-xl);
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  margin-bottom: var(--spacing-lg);
+}
+
+.image-upload-area:hover {
+  border-color: var(--primary-color);
+  background-color: var(--primary-light);
+}
+
+.image-upload-area.dragover {
+  border-color: var(--primary-color);
+  background-color: var(--primary-light);
+}
+
+.upload-placeholder p {
+  margin: var(--spacing-sm) 0;
+  color: var(--text-color);
+}
+
+.upload-hint {
+  font-size: var(--font-size-small);
+  color: var(--text-light);
+}
+
+.image-preview-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.image-preview {
+  position: relative;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-light);
+}
+
+.image-preview img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+
+.image-preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: var(--transition-fast);
+}
+
+.image-preview:hover .image-preview-overlay {
+  opacity: 1;
+}
+
+.remove-image-btn {
+  background: var(--error);
+  color: var(--white);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.remove-image-btn:hover {
+  background: #E55555;
+  transform: scale(1.1);
+}
+
+.image-url-section {
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--spacing-lg);
+}
+
+.image-url-section label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.url-input-group {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.url-input-group input {
+  flex: 1;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+}
+
+.add-url-btn {
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-small);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  white-space: nowrap;
+}
+
+.add-url-btn:hover {
+  background-color: #0051D3;
+}
+
+.url-images-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.url-image-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background-color: var(--secondary-color);
+  border-radius: var(--border-radius-md);
+}
+
+.url-image-preview {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: var(--border-radius-sm);
+}
+
+.url-image-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.url-image-url {
+  font-size: var(--font-size-small);
+  color: var(--text-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.remove-url-btn {
+  background: var(--error);
+  color: var(--white);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-xs);
+  cursor: pointer;
+  font-size: 12px;
+  transition: var(--transition-fast);
+}
+
+.remove-url-btn:hover {
+  background: #E55555;
+}
+
+/* Responsive adjustments for image upload */
+@media (max-width: 768px) {
+  .image-preview-container {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+  
+  .image-preview img {
+    height: 100px;
+  }
+  
+  .url-input-group {
+    flex-direction: column;
+  }
+  
+  .add-url-btn {
+    align-self: flex-start;
+  }
+}
+
 @media (max-width: 480px) {
   .hotel-proposal-modal-content {
     width: 98%;
