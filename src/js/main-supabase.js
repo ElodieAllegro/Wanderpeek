@@ -1,7 +1,7 @@
 import { SupabaseAuthManager } from './auth-supabase.js'
 import { UIManager } from './ui.js'
 import { api } from './supabase.js'
-import { getPlaceholderAccommodations, getPlaceholderActivities, formatHotelForDisplay, formatActivityForDisplay } from './data.js'
+import { formatHotelForDisplay, formatActivityForDisplay } from './data.js'
 
 class WanderpeekSupabaseApp {
   constructor() {
@@ -256,31 +256,29 @@ class WanderpeekSupabaseApp {
     try {
       const hotels = await api.getHotels({ city: this.currentCity })
       
-      // Format hotels for display and add fallback data if needed
       let accommodations = []
       
       if (hotels && hotels.length > 0) {
         accommodations = hotels.map(formatHotelForDisplay)
-      } else {
-        // Fallback to placeholder data if no hotels found
-        accommodations = getPlaceholderAccommodations(this.currentCity, 3)
       }
       
       let filteredHotels = accommodations
       if (this.activeFilters.size > 0) {
-        // Note: Filtering by category would need to be implemented in the backend
-        // For now, we'll show all hotels
         filteredHotels = accommodations
       }
 
       this.uiManager.renderAccommodationCards(filteredHotels, 'accommodations-grid')
       
       const count = filteredHotels.length
-      const infoText = `Plus de ${count} logements sont disponibles dans cette ville`
+      const infoText = count > 0 
+        ? `${count} logement${count > 1 ? 's' : ''} disponible${count > 1 ? 's' : ''} dans cette ville`
+        : `Aucun logement disponible dans cette ville`
       this.uiManager.updateInfoText(infoText)
     } catch (error) {
       console.error('Error loading accommodations:', error)
       this.uiManager.showNotification('Erreur lors du chargement des hébergements', 'error')
+      this.uiManager.renderAccommodationCards([], 'accommodations-grid')
+      this.uiManager.updateInfoText('Erreur lors du chargement des hébergements')
     }
   }
 
@@ -291,17 +289,12 @@ class WanderpeekSupabaseApp {
       let popularAccommodations = []
       if (popularHotels && popularHotels.length > 0) {
         popularAccommodations = popularHotels.map(formatHotelForDisplay)
-      } else {
-        // Fallback to some placeholder popular accommodations
-        popularAccommodations = getPlaceholderAccommodations('Marseille', 3)
       }
       
       this.uiManager.renderPopularCards(popularAccommodations, 'popular-list')
     } catch (error) {
       console.error('Error loading popular accommodations:', error)
-      // Show placeholder data on error
-      const fallbackData = getPlaceholderAccommodations('Marseille', 3)
-      this.uiManager.renderPopularCards(fallbackData, 'popular-list')
+      this.uiManager.renderPopularCards([], 'popular-list')
     }
   }
 
@@ -312,19 +305,14 @@ class WanderpeekSupabaseApp {
       let formattedActivities = []
       if (activities && activities.length > 0) {
         formattedActivities = activities.map(formatActivityForDisplay)
-      } else {
-        // Fallback to placeholder activities
-        formattedActivities = getPlaceholderActivities(this.currentCity)
       }
       
       this.uiManager.renderActivityCards(formattedActivities, 'activities-grid')
       this.uiManager.renderActivityCards(formattedActivities, 'activities-page-grid')
     } catch (error) {
       console.error('Error loading activities:', error)
-      // Show placeholder data on error
-      const fallbackData = getPlaceholderActivities(this.currentCity)
-      this.uiManager.renderActivityCards(fallbackData, 'activities-grid')
-      this.uiManager.renderActivityCards(fallbackData, 'activities-page-grid')
+      this.uiManager.renderActivityCards([], 'activities-grid')
+      this.uiManager.renderActivityCards([], 'activities-page-grid')
     }
   }
 

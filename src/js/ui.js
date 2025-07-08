@@ -32,6 +32,11 @@ export class UIManager {
     const container = document.getElementById(containerId);
     if (!container) return;
 
+    if (!accommodations || accommodations.length === 0) {
+      container.innerHTML = '<div class="no-results"><p>Aucun hébergement trouvé pour cette recherche.</p></div>';
+      return;
+    }
+
     container.innerHTML = accommodations.map(accommodation => `
       <div class="card" data-id="${accommodation.id}" data-type="accommodation">
         <img src="${accommodation.image || 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'}" alt="${accommodation.name || accommodation.title}" class="card-image">
@@ -50,6 +55,11 @@ export class UIManager {
     const container = document.getElementById(containerId);
     if (!container) return;
 
+    if (!accommodations || accommodations.length === 0) {
+      container.innerHTML = '<div class="no-results"><p>Aucun hébergement populaire disponible.</p></div>';
+      return;
+    }
+
     container.innerHTML = accommodations.map(accommodation => `
       <div class="popular-card" data-id="${accommodation.id}" data-type="accommodation">
         <img src="${accommodation.image || 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'}" alt="${accommodation.name || accommodation.title}" class="popular-card-image">
@@ -67,6 +77,11 @@ export class UIManager {
   renderActivityCards(activities, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
+
+    if (!activities || activities.length === 0) {
+      container.innerHTML = '<div class="no-results"><p>Aucune activité trouvée pour cette ville.</p></div>';
+      return;
+    }
 
     container.innerHTML = activities.map(activity => `
       <div class="activity-card" data-id="${activity.id}" data-type="activity">

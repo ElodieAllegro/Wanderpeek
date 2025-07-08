@@ -1072,6 +1072,19 @@ display: grid;
   display: none !important;
 }
 
+/* No results message */
+.no-results {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-light);
+  font-style: italic;
+}
+
+.no-results p {
+  margin: 0;
+  font-size: var(--font-size-base);
+}
+
 /* Loading states */
 .loading {
   opacity: 0.6;
