@@ -80,7 +80,7 @@ serve(async (req) => {
 
     // GET /admin/hotels - Get all hotels
     if (req.method === 'GET' && pathSegments.includes('hotels') && !pathSegments.includes('pending')) {
-      const { data, error } = await supabaseClient
+      const { data: hotels, error } = await supabaseClient
         .from('hotels')
         .select('*')
         .order('created_at', { ascending: false })
@@ -92,8 +92,27 @@ serve(async (req) => {
         )
       }
 
+      // Ajouter les images pour chaque hôtel
+      const hotelsWithImages = await Promise.all(
+        (hotels || []).map(async (hotel) => {
+          const { data: images } = await supabaseClient
+            .from('hotel_images')
+            .select('*')
+            .eq('hotel_id', hotel.id)
+            .order('display_order', { ascending: true })
+
+          return {
+            ...hotel,
+            images: images || [],
+            image: images && images.length > 0 
+              ? images.find(img => img.is_primary)?.image_url || images[0].image_url 
+              : null
+          }
+        })
+      )
+
       return new Response(
-        JSON.stringify(data || []),
+        JSON.stringify(hotelsWithImages),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
