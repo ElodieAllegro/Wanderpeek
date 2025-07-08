@@ -42,10 +42,16 @@ export class SupabaseAPI {
     if (filters.popular) params.append('popular', 'true')
     if (filters.status) params.append('status', filters.status)
 
+    console.log('🌐 Requête API hotels avec filtres:', filters)
+    console.log('🔗 URL complète:', `${this.baseUrl}/hotels?${params}`)
+    
     const response = await fetch(`${this.baseUrl}/hotels?${params}`, {
       headers: this.headers
     })
-    return response.json()
+    
+    const result = await response.json()
+    console.log('📡 Réponse API hotels:', result)
+    return result
   }
 
   async getHotel(id) {

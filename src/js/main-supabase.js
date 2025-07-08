@@ -254,12 +254,15 @@ class WanderpeekSupabaseApp {
 
   async displayAccommodations() {
     try {
+      console.log('🔍 Recherche d\'hôtels pour la ville:', this.currentCity)
       const hotels = await api.getHotels({ city: this.currentCity })
+      console.log('📊 Hôtels reçus de l\'API:', hotels)
       
       let accommodations = []
       
       if (hotels && hotels.length > 0) {
         accommodations = hotels.map(formatHotelForDisplay)
+        console.log('✅ Hôtels formatés:', accommodations)
       }
       
       let filteredHotels = accommodations
