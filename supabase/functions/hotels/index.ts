@@ -64,21 +64,36 @@ serve(async (req) => {
     if (req.method === 'GET' && pathSegments.length === 3) {
       const hotelId = pathSegments[2]
 
-      const { data, error } = await supabaseClient
+      // Récupérer l'hôtel
+      const { data: hotel, error: hotelError } = await supabaseClient
         .from('hotels')
         .select('*')
         .eq('id', hotelId)
         .single()
 
-      if (error || !data) {
+      if (hotelError || !hotel) {
         return new Response(
           JSON.stringify({ error: 'Hôtel introuvable' }),
           { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
 
+      // Récupérer les images de l'hôtel
+      const { data: images } = await supabaseClient
+        .from('hotel_images')
+        .select('*')
+        .eq('hotel_id', hotelId)
+        .order('display_order', { ascending: true })
+
+      // Ajouter les images à l'objet hôtel
+      const hotelWithImages = {
+        ...hotel,
+        images: images || [],
+        image: images && images.length > 0 ? images.find(img => img.is_primary)?.image_url || images[0].image_url : null
+      }
+
       return new Response(
-        JSON.stringify(data),
+        JSON.stringify(hotelWithImages),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -87,7 +102,7 @@ serve(async (req) => {
     if (req.method === 'POST' && pathSegments.includes('propose')) {
       const hotelData = await req.json()
 
-      const { data, error } = await supabaseClient
+      const { data: hotel, error: hotelError } = await supabaseClient
         .from('hotels')
         .insert({
           name: hotelData.hotelName,
@@ -106,23 +121,42 @@ serve(async (req) => {
           contact_email: hotelData.contactEmail,
           contact_phone: hotelData.contactPhone,
           website: hotelData.contactWebsite,
-          additional_info: hotelData.additionalInfo,
-          image: hotelData.images && hotelData.images.length > 0 ? hotelData.images[0] : null
+          additional_info: hotelData.additionalInfo
         })
         .select()
         .single()
 
-      if (error) {
+      if (hotelError) {
         return new Response(
           JSON.stringify({ error: 'Erreur lors de la proposition d\'hôtel' }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
 
+      // Ajouter les images si elles sont fournies
+      if (hotelData.images && hotelData.images.length > 0) {
+        const imageInserts = hotelData.images.map((imageUrl, index) => ({
+          hotel_id: hotel.id,
+          image_url: imageUrl,
+          is_primary: index === 0, // La première image est l'image principale
+          display_order: index,
+          alt_text: `Photo ${index + 1} de ${hotelData.hotelName}`
+        }))
+
+        const { error: imageError } = await supabaseClient
+          .from('hotel_images')
+          .insert(imageInserts)
+
+        if (imageError) {
+          console.error('Erreur lors de l\'ajout des images:', imageError)
+          // On continue même si les images échouent
+        }
+      }
+
       return new Response(
         JSON.stringify({
           message: 'Proposition d\'hôtel envoyée avec succès',
-          id: data.id
+          id: hotel.id
         }),
         { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
