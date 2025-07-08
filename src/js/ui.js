@@ -34,12 +34,12 @@ export class UIManager {
 
     container.innerHTML = accommodations.map(accommodation => `
       <div class="card" data-id="${accommodation.id}" data-type="accommodation">
-        <img src="${accommodation.image}" alt="${accommodation.title}" class="card-image">
+        <img src="${accommodation.image || 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'}" alt="${accommodation.name || accommodation.title}" class="card-image">
         <div class="card-content">
-          <h3 class="card-title">${accommodation.title}</h3>
-          <p class="card-price">Nuit à partir de <strong>${accommodation.price}€</strong></p>
+          <h3 class="card-title">${accommodation.name || accommodation.title}</h3>
+          <p class="card-price">Nuit à partir de <strong>${accommodation.price_per_night || accommodation.price}€</strong></p>
           <div class="card-rating">
-            ${generateStars(accommodation.rating)}
+            ${accommodation.rating ? generateStars(accommodation.rating) : generateStars(4)}
           </div>
         </div>
       </div>
@@ -52,12 +52,12 @@ export class UIManager {
 
     container.innerHTML = accommodations.map(accommodation => `
       <div class="popular-card" data-id="${accommodation.id}" data-type="accommodation">
-        <img src="${accommodation.image}" alt="${accommodation.title}" class="popular-card-image">
+        <img src="${accommodation.image || 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'}" alt="${accommodation.name || accommodation.title}" class="popular-card-image">
         <div class="popular-card-content">
-          <h3 class="popular-card-title">${accommodation.title}</h3>
-          <p class="popular-card-price">Nuit à partir de <strong>${accommodation.price}€</strong></p>
+          <h3 class="popular-card-title">${accommodation.name || accommodation.title}</h3>
+          <p class="popular-card-price">Nuit à partir de <strong>${accommodation.price_per_night || accommodation.price}€</strong></p>
           <div class="card-rating">
-            ${generateStars(accommodation.rating)}
+            ${accommodation.rating ? generateStars(accommodation.rating) : generateStars(4)}
           </div>
         </div>
       </div>
@@ -81,14 +81,14 @@ export class UIManager {
   showAccommodationModal(accommodation) {
     const modalContent = `
       <div class="modal-header">
-        <img src="${accommodation.image}" alt="${accommodation.title}">
+        <img src="${accommodation.image}" alt="${accommodation.name}">
       </div>
       <div class="modal-body">
-        <h2 class="modal-title">${accommodation.title}</h2>
-        <div class="modal-price">Nuit à partir de ${accommodation.price}€</div>
+        <h2 class="modal-title">${accommodation.name || accommodation.title}</h2>
+        <div class="modal-price">Nuit à partir de ${accommodation.price_per_night || accommodation.price}€</div>
         <div class="modal-rating">
-          ${generateStars(accommodation.rating)}
-          <span>(${accommodation.rating}/5)</span>
+          ${accommodation.rating ? generateStars(accommodation.rating) : ''}
+          ${accommodation.rating ? `<span>(${accommodation.rating}/5)</span>` : ''}
         </div>
         <p class="modal-description">${accommodation.description}</p>
         
@@ -144,6 +144,7 @@ export class UIManager {
     `;
 
     this.modalBody.innerHTML = modalContent;
+    this.modal.querySelector('.modal-content').dataset.hotelId = accommodation.id;
     this.modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 
@@ -205,13 +206,13 @@ export class UIManager {
 
     container.innerHTML = reservations.map(reservation => `
       <div class="reservation-card">
-        <h4>${reservation.accommodationTitle}</h4>
-        <p><strong>Dates:</strong> ${this.formatDate(reservation.checkin)} - ${this.formatDate(reservation.checkout)}</p>
+        <h4>${reservation.hotels?.name || reservation.accommodationTitle}</h4>
+        <p><strong>Dates:</strong> ${this.formatDate(reservation.checkin_date || reservation.checkin)} - ${this.formatDate(reservation.checkout_date || reservation.checkout)}</p>
         <p><strong>Voyageurs:</strong> ${reservation.guests}</p>
         <p><strong>Chambres:</strong> ${reservation.rooms}</p>
-        <p><strong>Prix estimé:</strong> ${reservation.totalPrice}€</p>
+        <p><strong>Prix estimé:</strong> ${reservation.total_price || reservation.totalPrice}€</p>
         ${reservation.message ? `<p><strong>Message:</strong> ${reservation.message}</p>` : ''}
-        <p><strong>Date de réservation:</strong> ${this.formatDate(reservation.createdAt)}</p>
+        <p><strong>Date de réservation:</strong> ${this.formatDate(reservation.created_at || reservation.createdAt)}</p>
         <span class="reservation-status ${reservation.status}">${this.getStatusText(reservation.status)}</span>
       </div>
     `).join('');
@@ -225,8 +226,12 @@ export class UIManager {
   getStatusText(status) {
     const statusMap = {
       'pending': 'En attente',
+      'en_attente': 'En attente',
       'confirmed': 'Confirmée',
-      'cancelled': 'Annulée'
+      'confirmee': 'Confirmée',
+      'cancelled': 'Annulée',
+      'annulee': 'Annulée',
+      'terminee': 'Terminée'
     };
     return statusMap[status] || status;
   }
