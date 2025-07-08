@@ -81,22 +81,25 @@ export class UIManager {
   showAccommodationModal(accommodation) {
     const modalContent = `
       <div class="modal-header">
-        <img src="${accommodation.image}" alt="${accommodation.name}">
+        <img src="${accommodation.image || 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'}" alt="${accommodation.name || accommodation.title}">
       </div>
       <div class="modal-body">
         <h2 class="modal-title">${accommodation.name || accommodation.title}</h2>
         <div class="modal-price">Nuit à partir de ${accommodation.price_per_night || accommodation.price}€</div>
         <div class="modal-rating">
-          ${accommodation.rating ? generateStars(accommodation.rating) : ''}
+          ${accommodation.rating ? generateStars(accommodation.rating) : generateStars(4)}
           ${accommodation.rating ? `<span>(${accommodation.rating}/5)</span>` : ''}
         </div>
         <p class="modal-description">${accommodation.description}</p>
         
-        ${accommodation.amenities ? `
+        ${accommodation.amenities && accommodation.amenities.length > 0 ? `
           <div class="amenities">
             <h4>Équipements</h4>
             <ul>
-              ${accommodation.amenities.map(amenity => `<li>${amenity}</li>`).join('')}
+              ${Array.isArray(accommodation.amenities) 
+                ? accommodation.amenities.map(amenity => `<li>${this.formatAmenity(amenity)}</li>`).join('')
+                : `<li>Équipements disponibles</li>`
+              }
             </ul>
           </div>
         ` : ''}
@@ -159,6 +162,25 @@ export class UIManager {
     });
   }
 
+  formatAmenity(amenity) {
+    const amenityMap = {
+      'wifi': 'WiFi gratuit',
+      'ac': 'Climatisation',
+      'parking': 'Parking',
+      'pool': 'Piscine',
+      'spa': 'Spa',
+      'restaurant': 'Restaurant',
+      'bar': 'Bar',
+      'gym': 'Salle de sport',
+      'pets': 'Animaux acceptés',
+      'kitchen': 'Cuisine équipée',
+      'beach_access': 'Accès plage',
+      'surf_school': 'École de surf',
+      'business_center': 'Centre d\'affaires'
+    };
+    
+    return amenityMap[amenity] || amenity;
+  }
   showActivityModal(activity) {
     const modalContent = `
       <div class="modal-header">

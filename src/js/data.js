@@ -1,189 +1,7 @@
+// Utility functions for data formatting and fallback data
 export const cities = [
-  'Marseille', 'Paris', 'Lyon', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille'
+  'Marseille', 'Paris', 'Lyon', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille', 'Biarritz'
 ];
-
-export const accommodations = {
-  'Marseille': [
-    {
-      id: 1,
-      title: 'Hôtel du port',
-      price: 52,
-      rating: 4,
-      image: 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'economique',
-      description: 'Situé au cœur du Vieux-Port de Marseille, cet hôtel charme par son emplacement exceptionnel et ses chambres confortables avec vue sur le port.',
-      amenities: ['WiFi gratuit', 'Climatisation', 'Vue sur le port', 'Petit-déjeuner']
-    },
-    {
-      id: 2,
-      title: 'Hôtel Chez Amina',
-      price: 96,
-      rating: 4,
-      image: 'https://images.pexels.com/photos/279746/pexels-photo-279746.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'familial',
-      description: 'Hôtel familial chaleureux proposant des chambres spacieuses et un service personnalisé.',
-      amenities: ['WiFi gratuit', 'Climatisation', 'Chambre familiale', 'Parking']
-    },
-    {
-      id: 3,
-      title: 'Hôtel Les mouettes',
-      price: 76,
-      rating: 4,
-      image: 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'romantique',
-      description: 'Établissement romantique avec terrasse panoramique sur la Méditerranée.',
-      amenities: ['WiFi gratuit', 'Terrasse', 'Vue mer', 'Room service']
-    },
-    {
-      id: 4,
-      title: 'Hôtel de la mer',
-      price: 46,
-      rating: 4,
-      image: 'https://images.pexels.com/photos/338504/pexels-photo-338504.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'economique',
-      description: 'Hôtel économique près de la plage avec un excellent rapport qualité-prix.',
-      amenities: ['WiFi gratuit', 'Proche plage', 'Réception 24h/24']
-    },
-    {
-      id: 5,
-      title: 'Auberge de la Canebière',
-      price: 52,
-      rating: 4,
-      image: 'https://images.pexels.com/photos/1579253/pexels-photo-1579253.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'pepites',
-      description: 'Auberge authentique sur la célèbre Canebière, mêlant charme provençal et modernité.',
-      amenities: ['WiFi gratuit', 'Bar', 'Centre historique', 'Climatisation']
-    },
-    {
-      id: 6,
-      title: 'Auberge le Panier',
-      price: 23,
-      rating: 4,
-      image: 'https://images.pexels.com/photos/1134176/pexels-photo-1134176.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'economique',
-      description: 'Auberge de jeunesse dans le quartier historique du Panier.',
-      amenities: ['WiFi gratuit', 'Cuisine commune', 'Centre historique', 'Bagagerie']
-    }
-  ],
-  'Paris': [
-    {
-      id: 7,
-      title: 'Hôtel Le Marais',
-      price: 120,
-      rating: 5,
-      image: 'https://images.pexels.com/photos/2869215/pexels-photo-2869215.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'romantique',
-      description: 'Hôtel de charme au cœur du Marais historique.',
-      amenities: ['WiFi gratuit', 'Climatisation', 'Concierge', 'Centre historique']
-    },
-    {
-      id: 8,
-      title: 'Hôtel Montmartre',
-      price: 85,
-      rating: 4,
-      image: 'https://images.pexels.com/photos/594077/pexels-photo-594077.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'pepites',
-      description: 'Hôtel pittoresque à Montmartre, près du Sacré-Cœur.',
-      amenities: ['WiFi gratuit', 'Vue panoramique', 'Ascenseur', 'Proche métro']
-    }
-  ],
-  'Lyon': [
-    {
-      id: 9,
-      title: 'Hôtel Presqu\'île',
-      price: 78,
-      rating: 4,
-      image: 'https://images.pexels.com/photos/1001965/pexels-photo-1001965.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'familial',
-      description: 'Hôtel moderne dans le centre de Lyon.',
-      amenities: ['WiFi gratuit', 'Restaurant', 'Centre-ville', 'Parking']
-    }
-  ]
-};
-
-export const popularAccommodations = [
-  {
-    id: 101,
-    title: 'Hôtel Le soleil du matin',
-    price: 128,
-    rating: 4,
-    image: 'https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-    city: 'Marseille',
-    description: 'Hôtel de luxe avec spa et vue panoramique sur la Méditerranée.',
-    amenities: ['Spa', 'Piscine', 'Vue mer', 'Restaurant gastronomique']
-  },
-  {
-    id: 102,
-    title: 'Chambres d\'hôtes Au cœur de l\'eau',
-    price: 71,
-    rating: 4,
-    image: 'https://images.pexels.com/photos/1267438/pexels-photo-1267438.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-    city: 'Marseille',
-    description: 'Chambres d\'hôtes authentiques avec jardin méditerranéen.',
-    amenities: ['Jardin', 'Petit-déjeuner maison', 'Parking privé', 'WiFi']
-  },
-  {
-    id: 103,
-    title: 'Hôtel Bleu et Blanc',
-    price: 68,
-    rating: 4,
-    image: 'https://images.pexels.com/photos/2017802/pexels-photo-2017802.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-    city: 'Marseille',
-    description: 'Hôtel design aux couleurs de la Méditerranée.',
-    amenities: ['Design moderne', 'Proche Calanques', 'Terrasse', 'Climatisation']
-  }
-];
-
-export const activities = {
-  'Marseille': [
-    {
-      id: 201,
-      title: 'Vieux-Port',
-      image: 'https://images.pexels.com/photos/1010657/pexels-photo-1010657.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      description: 'Le cœur historique de Marseille avec ses restaurants de poissons et son marché coloré.'
-    },
-    {
-      id: 202,
-      title: 'Fort de Pomègues',
-      image: 'https://images.pexels.com/photos/3061217/pexels-photo-3061217.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      description: 'Forteresse historique sur l\'archipel du Frioul.'
-    },
-    {
-      id: 203,
-      title: 'Parc national des Calanques',
-      image: 'https://images.pexels.com/photos/1659438/pexels-photo-1659438.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      description: 'Paysages à couper le souffle entre mer et montagne.'
-    },
-    {
-      id: 204,
-      title: 'Notre-Dame-de-la-Garde',
-      image: 'https://images.pexels.com/photos/2901215/pexels-photo-2901215.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      description: 'Basilique emblématique offrant une vue panoramique sur la ville.'
-    }
-  ],
-  'Paris': [
-    {
-      id: 205,
-      title: 'Tour Eiffel',
-      image: 'https://images.pexels.com/photos/2363/france-landmark-lights-night.jpg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      description: 'Monument emblématique de Paris et de la France.'
-    },
-    {
-      id: 206,
-      title: 'Musée du Louvre',
-      image: 'https://images.pexels.com/photos/2225617/pexels-photo-2225617.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      description: 'Le plus grand musée d\'art au monde.'
-    }
-  ],
-  'Lyon': [
-    {
-      id: 207,
-      title: 'Vieux Lyon',
-      image: 'https://images.pexels.com/photos/1595385/pexels-photo-1595385.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      description: 'Quartier Renaissance classé au patrimoine mondial de l\'UNESCO.'
-    }
-  ]
-};
 
 export function generateStars(rating) {
   let starsHTML = '';
@@ -197,7 +15,8 @@ export function generateStars(rating) {
   return starsHTML;
 }
 
-export function getRandomAccommodations(city, count = 6) {
+// Fallback function for generating placeholder accommodations when no data is available
+export function getPlaceholderAccommodations(city, count = 6) {
   const templates = [
     { title: 'Hôtel Central', priceRange: [60, 120], categories: ['familial', 'economique'] },
     { title: 'Auberge du Centre', priceRange: [30, 80], categories: ['economique', 'pepites'] },
@@ -220,8 +39,10 @@ export function getRandomAccommodations(city, count = 6) {
     
     return {
       id: Date.now() + index,
+      name: `${template.title} ${city}`,
       title: `${template.title} ${city}`,
-      price,
+      price_per_night: price,
+      price: price,
       rating,
       image: images[index % images.length],
       category,
@@ -229,4 +50,50 @@ export function getRandomAccommodations(city, count = 6) {
       amenities: ['WiFi gratuit', 'Climatisation', 'Réception 24h/24']
     };
   });
+}
+
+// Fallback function for generating placeholder activities
+export function getPlaceholderActivities(city) {
+  return [
+    {
+      id: Date.now(),
+      title: `Centre-ville de ${city}`,
+      image: 'https://images.pexels.com/photos/1010657/pexels-photo-1010657.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      description: `Découvrez le charme du centre historique de ${city}.`
+    },
+    {
+      id: Date.now() + 1,
+      title: `Musée de ${city}`,
+      image: 'https://images.pexels.com/photos/2225617/pexels-photo-2225617.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      description: `Explorez l'histoire et la culture locale de ${city}.`
+    }
+  ];
+}
+
+// Helper function to calculate rating from popularity
+export function calculateRatingFromPopularity(popularity) {
+  if (popularity >= 90) return 5;
+  if (popularity >= 80) return 4;
+  if (popularity >= 70) return 3;
+  if (popularity >= 60) return 2;
+  return 1;
+}
+
+// Helper function to format hotel data for display
+export function formatHotelForDisplay(hotel) {
+  return {
+    ...hotel,
+    title: hotel.name,
+    price: hotel.price_per_night,
+    rating: calculateRatingFromPopularity(hotel.popularity || 0),
+    image: hotel.image || 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
+  };
+}
+
+// Helper function to format activity data for display
+export function formatActivityForDisplay(activity) {
+  return {
+    ...activity,
+    image: activity.image || 'https://images.pexels.com/photos/1010657/pexels-photo-1010657.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
+  };
 }

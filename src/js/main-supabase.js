@@ -1,6 +1,7 @@
 import { SupabaseAuthManager } from './auth-supabase.js'
 import { UIManager } from './ui.js'
 import { api } from './supabase.js'
+import { getPlaceholderAccommodations, getPlaceholderActivities, formatHotelForDisplay, formatActivityForDisplay } from './data.js'
 
 class WanderpeekSupabaseApp {
   constructor() {
@@ -170,11 +171,21 @@ class WanderpeekSupabaseApp {
     try {
       const hotels = await api.getHotels({ city: this.currentCity })
       
-      let filteredHotels = hotels
+      // Format hotels for display and add fallback data if needed
+      let accommodations = []
+      
+      if (hotels && hotels.length > 0) {
+        accommodations = hotels.map(formatHotelForDisplay)
+      } else {
+        // Fallback to placeholder data if no hotels found
+        accommodations = getPlaceholderAccommodations(this.currentCity, 3)
+      }
+      
+      let filteredHotels = accommodations
       if (this.activeFilters.size > 0) {
         // Note: Filtering by category would need to be implemented in the backend
         // For now, we'll show all hotels
-        filteredHotels = hotels
+        filteredHotels = accommodations
       }
 
       this.uiManager.renderAccommodationCards(filteredHotels, 'accommodations-grid')
@@ -191,19 +202,44 @@ class WanderpeekSupabaseApp {
   async displayPopularAccommodations() {
     try {
       const popularHotels = await api.getHotels({ popular: true })
-      this.uiManager.renderPopularCards(popularHotels, 'popular-list')
+      
+      let popularAccommodations = []
+      if (popularHotels && popularHotels.length > 0) {
+        popularAccommodations = popularHotels.map(formatHotelForDisplay)
+      } else {
+        // Fallback to some placeholder popular accommodations
+        popularAccommodations = getPlaceholderAccommodations('Marseille', 3)
+      }
+      
+      this.uiManager.renderPopularCards(popularAccommodations, 'popular-list')
     } catch (error) {
       console.error('Error loading popular accommodations:', error)
+      // Show placeholder data on error
+      const fallbackData = getPlaceholderAccommodations('Marseille', 3)
+      this.uiManager.renderPopularCards(fallbackData, 'popular-list')
     }
   }
 
   async displayActivities() {
     try {
       const activities = await api.getActivities(this.currentCity)
-      this.uiManager.renderActivityCards(activities, 'activities-grid')
-      this.uiManager.renderActivityCards(activities, 'activities-page-grid')
+      
+      let formattedActivities = []
+      if (activities && activities.length > 0) {
+        formattedActivities = activities.map(formatActivityForDisplay)
+      } else {
+        // Fallback to placeholder activities
+        formattedActivities = getPlaceholderActivities(this.currentCity)
+      }
+      
+      this.uiManager.renderActivityCards(formattedActivities, 'activities-grid')
+      this.uiManager.renderActivityCards(formattedActivities, 'activities-page-grid')
     } catch (error) {
       console.error('Error loading activities:', error)
+      // Show placeholder data on error
+      const fallbackData = getPlaceholderActivities(this.currentCity)
+      this.uiManager.renderActivityCards(fallbackData, 'activities-grid')
+      this.uiManager.renderActivityCards(fallbackData, 'activities-page-grid')
     }
   }
 
@@ -219,10 +255,14 @@ class WanderpeekSupabaseApp {
       try {
         const hotel = await api.getHotel(id)
         if (hotel && !hotel.error) {
-          this.uiManager.showAccommodationModal(hotel)
+          const formattedHotel = formatHotelForDisplay(hotel)
+          this.uiManager.showAccommodationModal(formattedHotel)
+        } else {
+          this.uiManager.showNotification('Impossible de charger les détails de cet hébergement', 'error')
         }
       } catch (error) {
         console.error('Error loading hotel details:', error)
+        this.uiManager.showNotification('Erreur lors du chargement des détails', 'error')
       }
     } else if (type === 'activity') {
       // Activities don't have detailed views in this implementation
@@ -324,8 +364,13 @@ class WanderpeekSupabaseApp {
     const pricePerNight = parseInt(document.querySelector('.modal-price').textContent.match(/\d+/)[0])
     const totalPrice = pricePerNight * nights
 
-    // Get hotel ID from the modal (you might need to store this when opening the modal)
+    // Get hotel ID from the modal
     const hotelId = document.querySelector('.modal-content').dataset.hotelId
+
+    if (!hotelId) {
+      this.uiManager.showNotification('Erreur: impossible d\'identifier l\'hébergement', 'error')
+      return
+    }
 
     const reservationData = {
       hotelId,

@@ -95,8 +95,21 @@ export class SupabaseAuthManager {
     
     try {
       const reservations = await api.getClientReservations(this.currentUser.id)
-      return Array.isArray(reservations) ? reservations : []
+      // Format reservations for display
+      if (Array.isArray(reservations)) {
+        return reservations.map(reservation => ({
+          ...reservation,
+          // Ensure compatibility with existing UI code
+          accommodationTitle: reservation.hotels?.name || 'Hébergement',
+          checkin: reservation.checkin_date,
+          checkout: reservation.checkout_date,
+          totalPrice: reservation.total_price,
+          createdAt: reservation.created_at
+        }))
+      }
+      return []
     } catch (error) {
+      console.error('Error fetching user reservations:', error)
       return []
     }
   }
