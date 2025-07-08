@@ -25,7 +25,13 @@ class WanderpeekSupabaseApp {
     document.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault()
-        this.uiManager.showPage(link.dataset.page)
+        const page = link.dataset.page
+        this.uiManager.showPage(page)
+        
+        // Load admin dashboard if admin page is accessed
+        if (page === 'admin' && this.authManager.isAdmin()) {
+          this.loadAdminDashboard()
+        }
       })
     })
 
@@ -114,6 +120,58 @@ class WanderpeekSupabaseApp {
         this.closeHotelProposalModal()
       }
     })
+
+    // Admin dashboard events
+    document.addEventListener('click', (e) => {
+      // Admin tab switching
+      if (e.target.classList.contains('admin-tab-btn')) {
+        this.switchAdminTab(e.target.dataset.tab)
+      }
+      
+      // Hotel actions
+      if (e.target.classList.contains('view-hotel-btn')) {
+        this.viewHotelDetails(e.target.dataset.hotelId)
+      }
+      
+      if (e.target.classList.contains('approve-hotel-btn')) {
+        this.openHotelApprovalModal(e.target.dataset.hotelId)
+      }
+      
+      if (e.target.classList.contains('reject-hotel-btn')) {
+        this.rejectHotel(e.target.dataset.hotelId)
+      }
+      
+      if (e.target.classList.contains('delete-hotel-btn')) {
+        this.deleteHotel(e.target.dataset.hotelId)
+      }
+    })
+
+    // Hotel details modal
+    document.querySelector('.hotel-details-close').addEventListener('click', () => {
+      this.closeHotelDetailsModal()
+    })
+
+    document.getElementById('hotel-details-modal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        this.closeHotelDetailsModal()
+      }
+    })
+
+    // Hotel approval modal
+    document.querySelector('.hotel-approval-close').addEventListener('click', () => {
+      this.closeHotelApprovalModal()
+    })
+
+    document.getElementById('hotel-approval-modal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        this.closeHotelApprovalModal()
+      }
+    })
+
+    document.getElementById('hotel-approval-form').addEventListener('submit', (e) => {
+      e.preventDefault()
+      this.handleHotelApproval(e)
+    })
   }
 
   async loadInitialData() {
@@ -126,12 +184,39 @@ class WanderpeekSupabaseApp {
   setupAuth() {
     if (this.authManager.isLoggedIn()) {
       this.uiManager.updateAuthUI(this.authManager.currentUser)
+      this.updateNavigationForRole()
     }
 
     this.authManager.onAuthStateChange((user) => {
       this.uiManager.updateAuthUI(user)
+      this.updateNavigationForRole()
       if (user) this.updateAccountPage()
     })
+  }
+
+  updateNavigationForRole() {
+    const user = this.authManager.currentUser
+    const navLinks = document.querySelector('.nav-links')
+    
+    // Remove existing admin link
+    const existingAdminLink = document.querySelector('[data-page="admin"]')
+    if (existingAdminLink) {
+      existingAdminLink.parentElement.remove()
+    }
+    
+    // Add admin link if user is admin
+    if (user && this.authManager.isAdmin()) {
+      const adminLi = document.createElement('li')
+      adminLi.innerHTML = '<a href="#" data-page="admin" class="nav-link">Administration</a>'
+      navLinks.insertBefore(adminLi, navLinks.lastElementChild)
+      
+      // Add event listener to the new admin link
+      adminLi.querySelector('.nav-link').addEventListener('click', (e) => {
+        e.preventDefault()
+        this.uiManager.showPage('admin')
+        this.loadAdminDashboard()
+      })
+    }
   }
 
   async handleSearch() {
@@ -445,6 +530,430 @@ class WanderpeekSupabaseApp {
     } catch (error) {
       this.uiManager.showNotification('Erreur lors de l\'envoi de la proposition', 'error')
     }
+  }
+
+  // Admin Dashboard Methods
+  async loadAdminDashboard() {
+    if (!this.authManager.isAdmin()) {
+      this.uiManager.showNotification('Accès non autorisé', 'error')
+      return
+    }
+
+    try {
+      const dashboardData = await api.getAdminDashboard()
+      this.renderAdminStats(dashboardData.stats)
+      this.renderPendingHotels(dashboardData.pendingHotels || [])
+      await this.loadAllHotels()
+    } catch (error) {
+      console.error('Error loading admin dashboard:', error)
+      this.uiManager.showNotification('Erreur lors du chargement du dashboard', 'error')
+    }
+  }
+
+  renderAdminStats(stats) {
+    const statsContainer = document.getElementById('admin-stats')
+    statsContainer.innerHTML = `
+      <div class="stat-card">
+        <div class="stat-number">${stats.pendingHotels || 0}</div>
+        <div class="stat-label">Hôtels en attente</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">${stats.totalHotels || 0}</div>
+        <div class="stat-label">Total hôtels</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">${stats.totalReservations || 0}</div>
+        <div class="stat-label">Total réservations</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">${stats.totalUsers || 0}</div>
+        <div class="stat-label">Total utilisateurs</div>
+      </div>
+    `
+  }
+
+  renderPendingHotels(hotels) {
+    const container = document.getElementById('pending-hotels-grid')
+    
+    if (hotels.length === 0) {
+      container.innerHTML = '<p>Aucun hôtel en attente de validation.</p>'
+      return
+    }
+
+    container.innerHTML = hotels.map(hotel => `
+      <div class="hotel-admin-card">
+        <div class="hotel-admin-header">
+          <h4 class="hotel-admin-title">${hotel.name}</h4>
+          <div class="hotel-admin-meta">
+            <span>${hotel.city}</span>
+            <span class="hotel-status ${hotel.status}">${this.getStatusText(hotel.status)}</span>
+          </div>
+        </div>
+        <div class="hotel-admin-body">
+          <div class="hotel-admin-info">
+            <p><strong>Type:</strong> ${this.getHotelTypeText(hotel.type)}</p>
+            <p><strong>Chambres:</strong> ${hotel.rooms}</p>
+            <p><strong>Capacité:</strong> ${hotel.capacity} personnes</p>
+            <p><strong>Contact:</strong> ${hotel.contact_name}</p>
+            <p><strong>Email:</strong> ${hotel.contact_email}</p>
+            <p><strong>Téléphone:</strong> ${hotel.contact_phone}</p>
+          </div>
+          <div class="hotel-admin-actions">
+            <button class="admin-btn admin-btn-primary view-hotel-btn" data-hotel-id="${hotel.id}">
+              Voir détails
+            </button>
+            <button class="admin-btn admin-btn-success approve-hotel-btn" data-hotel-id="${hotel.id}">
+              Approuver
+            </button>
+            <button class="admin-btn admin-btn-danger reject-hotel-btn" data-hotel-id="${hotel.id}">
+              Rejeter
+            </button>
+          </div>
+        </div>
+      </div>
+    `).join('')
+  }
+
+  async loadAllHotels() {
+    try {
+      const hotels = await api.getAllHotels()
+      this.renderAllHotels(hotels || [])
+    } catch (error) {
+      console.error('Error loading all hotels:', error)
+    }
+  }
+
+  renderAllHotels(hotels) {
+    const tbody = document.getElementById('all-hotels-tbody')
+    
+    tbody.innerHTML = hotels.map(hotel => `
+      <tr>
+        <td>${hotel.name}</td>
+        <td>${hotel.city}</td>
+        <td>${this.getHotelTypeText(hotel.type)}</td>
+        <td><span class="hotel-status ${hotel.status}">${this.getStatusText(hotel.status)}</span></td>
+        <td>${hotel.price_per_night ? parseFloat(hotel.price_per_night).toFixed(2) + '€' : 'N/A'}</td>
+        <td>${hotel.popularity || 0}</td>
+        <td>
+          <div class="table-actions">
+            <button class="admin-btn admin-btn-primary view-hotel-btn" data-hotel-id="${hotel.id}">
+              Voir
+            </button>
+            ${hotel.status === 'en_attente' ? `
+              <button class="admin-btn admin-btn-success approve-hotel-btn" data-hotel-id="${hotel.id}">
+                Approuver
+              </button>
+              <button class="admin-btn admin-btn-danger reject-hotel-btn" data-hotel-id="${hotel.id}">
+                Rejeter
+              </button>
+            ` : ''}
+            <button class="admin-btn admin-btn-danger delete-hotel-btn" data-hotel-id="${hotel.id}">
+              Supprimer
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('')
+  }
+
+  switchAdminTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+      btn.classList.remove('active')
+    })
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active')
+
+    // Update tab content
+    document.querySelectorAll('.admin-tab-content').forEach(content => {
+      content.classList.remove('active')
+    })
+    document.getElementById(`${tabName}-tab`).classList.add('active')
+
+    // Load specific tab data
+    if (tabName === 'all') {
+      this.loadAllHotels()
+    } else if (tabName === 'stats') {
+      this.loadDetailedStats()
+    }
+  }
+
+  async loadDetailedStats() {
+    const container = document.getElementById('detailed-stats')
+    container.innerHTML = `
+      <div class="stats-card">
+        <h4>Répartition par statut</h4>
+        <ul class="stats-list">
+          <li><span>En attente</span><span id="stats-pending">-</span></li>
+          <li><span>Validés</span><span id="stats-approved">-</span></li>
+          <li><span>Refusés</span><span id="stats-rejected">-</span></li>
+        </ul>
+      </div>
+      <div class="stats-card">
+        <h4>Répartition par ville</h4>
+        <ul class="stats-list" id="stats-cities">
+          <li><span>Chargement...</span><span>-</span></li>
+        </ul>
+      </div>
+      <div class="stats-card">
+        <h4>Répartition par type</h4>
+        <ul class="stats-list" id="stats-types">
+          <li><span>Chargement...</span><span>-</span></li>
+        </ul>
+      </div>
+    `
+
+    try {
+      const hotels = await api.getAllHotels()
+      this.updateDetailedStats(hotels || [])
+    } catch (error) {
+      console.error('Error loading detailed stats:', error)
+    }
+  }
+
+  updateDetailedStats(hotels) {
+    // Status stats
+    const statusCounts = hotels.reduce((acc, hotel) => {
+      acc[hotel.status] = (acc[hotel.status] || 0) + 1
+      return acc
+    }, {})
+
+    document.getElementById('stats-pending').textContent = statusCounts.en_attente || 0
+    document.getElementById('stats-approved').textContent = statusCounts.valide || 0
+    document.getElementById('stats-rejected').textContent = statusCounts.refuse || 0
+
+    // City stats
+    const cityCounts = hotels.reduce((acc, hotel) => {
+      acc[hotel.city] = (acc[hotel.city] || 0) + 1
+      return acc
+    }, {})
+
+    const citiesContainer = document.getElementById('stats-cities')
+    citiesContainer.innerHTML = Object.entries(cityCounts)
+      .sort(([,a], [,b]) => b - a)
+      .map(([city, count]) => `<li><span>${city}</span><span>${count}</span></li>`)
+      .join('')
+
+    // Type stats
+    const typeCounts = hotels.reduce((acc, hotel) => {
+      acc[hotel.type] = (acc[hotel.type] || 0) + 1
+      return acc
+    }, {})
+
+    const typesContainer = document.getElementById('stats-types')
+    typesContainer.innerHTML = Object.entries(typeCounts)
+      .sort(([,a], [,b]) => b - a)
+      .map(([type, count]) => `<li><span>${this.getHotelTypeText(type)}</span><span>${count}</span></li>`)
+      .join('')
+  }
+
+  async viewHotelDetails(hotelId) {
+    try {
+      const hotel = await api.getHotel(hotelId)
+      if (hotel && !hotel.error) {
+        this.showHotelDetailsModal(hotel)
+      } else {
+        this.uiManager.showNotification('Impossible de charger les détails de l\'hôtel', 'error')
+      }
+    } catch (error) {
+      console.error('Error loading hotel details:', error)
+      this.uiManager.showNotification('Erreur lors du chargement des détails', 'error')
+    }
+  }
+
+  showHotelDetailsModal(hotel) {
+    const modalBody = document.getElementById('hotel-details-body')
+    modalBody.innerHTML = `
+      <div class="hotel-details-header">
+        <h3 class="hotel-details-title">${hotel.name}</h3>
+        <div class="hotel-details-meta">
+          <span>${hotel.city}, ${hotel.postal_code}</span>
+          <span class="hotel-status ${hotel.status}">${this.getStatusText(hotel.status)}</span>
+          <span>Créé le ${new Date(hotel.created_at).toLocaleDateString('fr-FR')}</span>
+        </div>
+      </div>
+      <div class="hotel-details-body">
+        <div class="hotel-details-section">
+          <h4>Description</h4>
+          <p>${hotel.description}</p>
+        </div>
+        
+        <div class="hotel-details-section">
+          <h4>Informations générales</h4>
+          <div class="hotel-details-grid">
+            <div class="hotel-details-item">
+              <strong>Type</strong>
+              ${this.getHotelTypeText(hotel.type)}
+            </div>
+            <div class="hotel-details-item">
+              <strong>Adresse</strong>
+              ${hotel.address}
+            </div>
+            <div class="hotel-details-item">
+              <strong>Chambres</strong>
+              ${hotel.rooms}
+            </div>
+            <div class="hotel-details-item">
+              <strong>Capacité</strong>
+              ${hotel.capacity} personnes
+            </div>
+            <div class="hotel-details-item">
+              <strong>Prix/nuit</strong>
+              ${hotel.price_per_night ? parseFloat(hotel.price_per_night).toFixed(2) + '€' : 'Non défini'}
+            </div>
+            <div class="hotel-details-item">
+              <strong>Popularité</strong>
+              ${hotel.popularity || 0}
+            </div>
+          </div>
+        </div>
+        
+        <div class="hotel-details-section">
+          <h4>Contact</h4>
+          <div class="hotel-details-grid">
+            <div class="hotel-details-item">
+              <strong>Responsable</strong>
+              ${hotel.contact_name || 'Non spécifié'}
+            </div>
+            <div class="hotel-details-item">
+              <strong>Email</strong>
+              ${hotel.contact_email || 'Non spécifié'}
+            </div>
+            <div class="hotel-details-item">
+              <strong>Téléphone</strong>
+              ${hotel.contact_phone || 'Non spécifié'}
+            </div>
+            <div class="hotel-details-item">
+              <strong>Site web</strong>
+              ${hotel.website ? `<a href="${hotel.website}" target="_blank">${hotel.website}</a>` : 'Non spécifié'}
+            </div>
+          </div>
+        </div>
+        
+        ${hotel.amenities && hotel.amenities.length > 0 ? `
+          <div class="hotel-details-section">
+            <h4>Équipements</h4>
+            <div class="amenities-list">
+              ${hotel.amenities.map(amenity => `<span class="amenity-tag">${this.uiManager.formatAmenity(amenity)}</span>`).join('')}
+            </div>
+          </div>
+        ` : ''}
+        
+        ${hotel.additional_info ? `
+          <div class="hotel-details-section">
+            <h4>Informations complémentaires</h4>
+            <p>${hotel.additional_info}</p>
+          </div>
+        ` : ''}
+      </div>
+    `
+    
+    document.getElementById('hotel-details-modal').classList.add('active')
+    document.body.style.overflow = 'hidden'
+  }
+
+  closeHotelDetailsModal() {
+    document.getElementById('hotel-details-modal').classList.remove('active')
+    document.body.style.overflow = ''
+  }
+
+  openHotelApprovalModal(hotelId) {
+    this.currentHotelId = hotelId
+    document.getElementById('hotel-approval-modal').classList.add('active')
+    document.body.style.overflow = 'hidden'
+    
+    // Reset form
+    document.getElementById('hotel-approval-form').reset()
+  }
+
+  closeHotelApprovalModal() {
+    document.getElementById('hotel-approval-modal').classList.remove('active')
+    document.body.style.overflow = ''
+    this.currentHotelId = null
+  }
+
+  async handleHotelApproval(e) {
+    const formData = new FormData(e.target)
+    const updateData = {
+      pricePerNight: parseFloat(formData.get('pricePerNight')),
+      image: formData.get('image') || null
+    }
+
+    try {
+      const result = await api.approveHotel(this.currentHotelId, updateData)
+      
+      if (result.message) {
+        this.uiManager.showNotification('Hôtel approuvé avec succès !')
+        this.closeHotelApprovalModal()
+        this.loadAdminDashboard() // Refresh dashboard
+      } else {
+        this.uiManager.showNotification(result.error || 'Erreur lors de l\'approbation', 'error')
+      }
+    } catch (error) {
+      console.error('Error approving hotel:', error)
+      this.uiManager.showNotification('Erreur lors de l\'approbation', 'error')
+    }
+  }
+
+  async rejectHotel(hotelId) {
+    if (!confirm('Êtes-vous sûr de vouloir rejeter cet hôtel ?')) {
+      return
+    }
+
+    try {
+      const result = await api.rejectHotel(hotelId)
+      
+      if (result.message) {
+        this.uiManager.showNotification('Hôtel rejeté')
+        this.loadAdminDashboard() // Refresh dashboard
+      } else {
+        this.uiManager.showNotification(result.error || 'Erreur lors du rejet', 'error')
+      }
+    } catch (error) {
+      console.error('Error rejecting hotel:', error)
+      this.uiManager.showNotification('Erreur lors du rejet', 'error')
+    }
+  }
+
+  async deleteHotel(hotelId) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer définitivement cet hôtel ? Cette action est irréversible.')) {
+      return
+    }
+
+    try {
+      const result = await api.deleteHotel(hotelId)
+      
+      if (result.message) {
+        this.uiManager.showNotification('Hôtel supprimé avec succès')
+        this.loadAdminDashboard() // Refresh dashboard
+      } else {
+        this.uiManager.showNotification(result.error || 'Erreur lors de la suppression', 'error')
+      }
+    } catch (error) {
+      console.error('Error deleting hotel:', error)
+      this.uiManager.showNotification('Erreur lors de la suppression', 'error')
+    }
+  }
+
+  getStatusText(status) {
+    const statusMap = {
+      'en_attente': 'En attente',
+      'valide': 'Validé',
+      'refuse': 'Refusé'
+    }
+    return statusMap[status] || status
+  }
+
+  getHotelTypeText(type) {
+    const typeMap = {
+      'hotel': 'Hôtel',
+      'apartment': 'Appartement',
+      'house': 'Maison',
+      'villa': 'Villa',
+      'studio': 'Studio',
+      'guesthouse': 'Maison d\'hôtes',
+      'other': 'Autre'
+    }
+    return typeMap[type] || type
   }
 }
 
