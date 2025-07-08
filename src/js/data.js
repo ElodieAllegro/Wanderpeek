@@ -84,7 +84,7 @@ export function formatHotelForDisplay(hotel) {
   return {
     ...hotel,
     title: hotel.name,
-    price: hotel.price_per_night,
+    price: parseFloat(hotel.price_per_night) || 0,
     rating: calculateRatingFromPopularity(hotel.popularity || 0),
     image: hotel.image || 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
   };
